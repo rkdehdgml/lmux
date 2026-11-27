@@ -83,3 +83,8 @@
 - 저장 화면 삭제와 같은 이름 저장이 겹치는 순간 타이밍, 끌기 취소 등 낮음 항목은 `docs/reviews/stage-3.md`.
 - 2단계 빌드로 되돌려 저장하면 배치만 사라짐(D39).
 - 스냅샷 `backups/stage-3.zip`. 다음은 4단계(훅 상태·컨텍스트·승인·알림). 시작하지 않음.
+
+## 4단계: 설계·계획만 완료 (2026-11-27, 구현은 노트북에서)
+- `/grill-me`로 사용자와 3라운드에 걸쳐 결정 → `docs/superpowers/specs/2026-11-27-stage-4-design.md`, `docs/superpowers/plans/2026-11-27-stage-4.md`, 결정 D43~D51.
+- 코드는 아직 없음. 첫 작업은 실제 Claude 1회 실행으로 가정 확인(계획서 Task 0).
+- `docs/tooling.md`에 이어서 작업할 때 쓰는 스킬·플러그인을 정리, 사용자 개인 스킬은 `tooling/skills/codex-crosscheck/`.

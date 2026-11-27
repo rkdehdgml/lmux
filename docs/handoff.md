@@ -4,7 +4,8 @@
 - **1단계 통과**(창 + PowerShell 패널). Codex 6차에서 높음 0·중간 0.
 - **2단계 통과**(셸 프로필, 프로젝트 등록, 사이드바, 다중 세션, JSON 저장). Codex 7차에서 높음 0·중간 0.
 - **3단계 통과**(화면 분할). Codex·Claude 검토 최종 높음 0·중간 0.
-- **다음은 4단계**(훅 상태·컨텍스트·승인·알림). 아직 시작하지 않음. 상세는 `docs/spec.md`.
+- **4단계는 설계·계획까지 끝남, 구현 전.** 설계 `docs/superpowers/specs/2026-11-27-stage-4-design.md`, 계획 `docs/superpowers/plans/2026-11-27-stage-4.md`(Task 0부터), 결정 D43~D51. 이 프로젝트에서 쓰는 스킬·플러그인은 `docs/tooling.md`.
+- 4단계 주의: Lmux 세션 안에서는 사용자 `statusLine`이 가려진다(사용자는 쓰지 않음). 계획서 Task 0은 실제 Claude를 한 번 실행하므로 사용자 확인이 필요하다.
 - 진행 기록 `docs/progress.md`, 결정 `docs/decisions.md`, 검토 기록 `docs/reviews/`.
 
 ## 노트북 준비물
@@ -44,7 +45,7 @@ bash scripts/e2e/stage-2.sh    # 선택, Git Bash에서. 실행 중에는 앱 �
 ## Claude Code에서 이어가기
 프로젝트 폴더에서 `claude`를 실행하고 이렇게 요청한다.
 
-> CLAUDE.md, docs/handoff.md, docs/progress.md, docs/decisions.md, docs/spec.md를 읽고 4단계부터 이어서 진행해줘. superpowers 스킬을 활용하고, Codex 검토는 높음·중간이 없을 때까지 반복해.
+> CLAUDE.md, docs/handoff.md, docs/progress.md, docs/decisions.md, docs/spec.md를 읽고 4단계 계획서(docs/superpowers/plans/2026-11-27-stage-4.md)의 Task 0부터 이어서 진행해줘. docs/tooling.md의 스킬을 설치해 두었는지 먼저 확인하고, superpowers 스킬을 활용하고, Codex 검토는 높음·중간이 없을 때까지 반복해.
 
 ## git에 담기지 않는 것
 - **Claude의 대화 기록과 메모리.** 필요한 규칙은 `CLAUDE.md`와 `docs/decisions.md`에 옮겨 두었다.
