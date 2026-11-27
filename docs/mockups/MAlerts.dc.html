@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>모바일 알림</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0F1115}
+a{color:#8AB8FF}a:hover{color:#B5D2FF}
+.mono{font-family:'JetBrains Mono',monospace}
+.muted{color:#9AA3B2}
+.icon{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.item{display:flex;gap:12px;padding:14px;border-radius:14px;background:#161922;border:1px solid #2A2F3A;text-decoration:none;color:#E6E8EE}
+.dot{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex:none}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;color:#9AA3B2;text-decoration:none;min-height:48px;justify-content:center}
+</style>
+</helmet>
+<div style="width:390px;height:844px;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;color:#E6E8EE;background:#0F1115;display:flex;flex-direction:column">
+<header style="padding:24px 20px 12px;display:flex;align-items:center">
+<h1 style="margin:0;font-size:22px;font-weight:700;flex:1">알림</h1>
+<button style="font-family:inherit;font-size:13px;min-height:44px;padding:0 12px;border:0;background:transparent;color:#8AB8FF;cursor:pointer">모두 읽음</button>
+</header>
+
+<div style="margin:0 16px 12px;padding:12px 14px;border-radius:14px;background:#13161C;border:1px solid #222631">
+<div class="muted" style="font-size:11px;margin-bottom:8px">잠금 화면에는 이렇게 보여요</div>
+<div style="display:flex;gap:10px;align-items:flex-start;background:#1F2430;border-radius:12px;padding:10px 12px">
+<div style="width:24px;height:24px;border-radius:6px;background:#2B5CD6;flex:none"></div>
+<div style="font-size:13px;line-height:19px"><b style="font-weight:500">Lmux</b> <span class="muted" style="font-size:11px">· 지금</span><br>fix/upload-size가 입력을 기다려요</div>
+</div>
+</div>
+
+<div style="flex:1;overflow:hidden;padding:0 16px;display:flex;flex-direction:column;gap:8px">
+<div class="muted" style="font-size:12px;padding:4px 4px 0">새 알림</div>
+<a class="item" href="MTerminal.dc.html" style="border-color:#6B5014">
+<span class="dot" style="background:#3A2C0C;color:#F7BE5C"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></span>
+<span style="flex:1;font-size:14px;line-height:20px">fix/upload-size가 입력을 기다려요<br><span class="muted" style="font-size:12px">명령 실행 승인 필요 · 1분 전</span></span>
+</a>
+<a class="item" href="MSessions.dc.html">
+<span class="dot" style="background:#3A2C0C;color:#F7BE5C"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h16M6 16l4-8 4 5 4-9"></path></svg></span>
+<span style="flex:1;font-size:14px;line-height:20px">fix/upload-size 컨텍스트 80% 넘음<br><span class="muted" style="font-size:12px">곧 압축(/compact)이 필요할 수 있어요 · 3분 전</span></span>
+</a>
+<div class="muted" style="font-size:12px;padding:8px 4px 0">이전</div>
+<a class="item" href="MSessions.dc.html">
+<span class="dot" style="background:#16261F;color:#6FD3A8"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10"></path></svg></span>
+<span style="flex:1;font-size:14px;line-height:20px">docs/readme 작업 완료<br><span class="muted" style="font-size:12px">파일 3개 변경 · 12분 전</span></span>
+</a>
+<a class="item" href="MSessions.dc.html">
+<span class="dot" style="background:#1F2430;color:#9AA3B2"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h16M7 16V9M12 16V5M17 16v-4"></path></svg></span>
+<span style="flex:1;font-size:14px;line-height:20px">업무 계정 5시간 한도 60% 도달<br><span class="muted" style="font-size:12px">1시간 48분 후 초기화 · 25분 전</span></span>
+</a>
+<a class="item" href="MSessions.dc.html">
+<span class="dot" style="background:#3A1A1E;color:#FF8A93"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v4M12 16h.01"></path></svg></span>
+<span style="flex:1;font-size:14px;line-height:20px">refactor/mapper 오류로 멈춤<br><span class="muted" style="font-size:12px">컴파일 실패 후 재시도함 · 1시간 전</span></span>
+</a>
+</div>
+
+<nav aria-label="하단 메뉴" style="display:flex;border-top:1px solid #222631;background:#13161C;padding:4px 8px 16px;margin-top:12px">
+<a class="tab" href="MSessions.dc.html"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="2"></rect><rect x="13" y="3" width="8" height="8" rx="2"></rect><rect x="3" y="13" width="8" height="8" rx="2"></rect><rect x="13" y="13" width="8" height="8" rx="2"></rect></svg>세션</a>
+<a class="tab" href="MFiles.dc.html"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>파일</a>
+<a class="tab" href="MAlerts.dc.html" style="color:#8AB8FF" aria-current="page"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10 21h4"></path></svg>알림</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

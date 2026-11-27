@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>새 세션</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0E1014}
+a{color:#8DBAFF}a:hover{color:#B8D4FF}
+.mono{font-family:'JetBrains Mono',monospace}
+.muted{color:#A0A8B8}
+.dim{color:#8A93A5}
+.btn{font-family:inherit;font-size:13px;border-radius:8px;border:0;background:#1F242E;color:#E8EAF0;padding:9px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn.primary{background:#2F6FE4;color:#fff;font-weight:500}
+.icon{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.field{display:flex;flex-direction:column;gap:7px;font-size:13px}
+.lbl{color:#C7CCD6;font-weight:500}
+.input{font-family:inherit;font-size:13px;background:#0E1014;border:1px solid #262B36;border-radius:9px;color:#E8EAF0;padding:10px 12px}
+.opt{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:11px;background:#191C23;font-size:13px;cursor:pointer}
+.seg{font-family:inherit;font-size:13px;border-radius:8px;padding:8px 12px;background:#191C23;color:#C7CCD6;display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+.badge{display:inline-flex;align-items:center;font-size:10.5px;font-weight:600;border-radius:5px;padding:1px 6px;line-height:16px}
+</style>
+</helmet>
+<div style="width:100%;min-height:900px;display:flex;align-items:center;justify-content:center;padding:40px 16px;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;color:#E8EAF0;background:#090B0E">
+<div role="dialog" aria-labelledby="ns-title" style="width:100%;max-width:640px;background:#14171D;border-radius:16px;box-shadow:0 30px 80px #000000A0,0 0 0 1px #20252F;display:flex;flex-direction:column">
+<div style="display:flex;align-items:flex-start;padding:22px 24px 6px">
+<div style="flex:1"><h2 id="ns-title" style="margin:0;font-size:18px;font-weight:700">새 세션</h2><p class="muted" style="margin:4px 0 0;font-size:13px">프로젝트 폴더에서 에이전트를 바로 띄워요</p></div>
+<button class="btn" style="background:transparent;padding:6px" aria-label="닫기"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+<div style="padding:18px 24px;display:flex;flex-direction:column;gap:20px">
+
+<div class="field">
+<label for="ns-proj" class="lbl">프로젝트</label>
+<select id="ns-proj" class="input"><option>gov-portal · SVN · D:\work\gov-portal</option><option>portfolio-cms · Git</option><option>batch-scripts · 폴더</option></select>
+</div>
+
+<div class="field">
+<label for="ns-task" class="lbl">세션 이름 · 첫 지시</label>
+<input id="ns-task" class="input" value="급식 신청 화면 수정" aria-describedby="ns-task-h">
+<textarea class="input" rows="2" style="resize:none" aria-label="첫 지시">신청 기간이 지나면 신청 버튼을 막고 안내 문구를 보여줘</textarea>
+<span id="ns-task-h" class="dim" style="font-size:12px">비워 두면 빈 세션으로 열려요</span>
+</div>
+
+<div class="field">
+<span class="lbl">어디서 작업할까요?</span>
+<label class="opt" style="box-shadow:inset 0 0 0 1.5px #2F6FE4;background:#172036"><input type="radio" name="where" checked style="accent-color:#6EA8FF;margin-top:3px"><span style="flex:1"><b style="font-weight:500">프로젝트 폴더에서 바로</b><br><span class="muted" style="font-size:12px">D:\work\gov-portal · 기본값</span></span></label>
+<label class="opt" style="opacity:.6;cursor:not-allowed"><input type="radio" name="where" disabled style="margin-top:3px"><span style="flex:1"><b style="font-weight:500">Git 워크트리로 분리</b> <span class="badge" style="background:#1B2B22;color:#7FD8AE">Git 전용</span><br><span class="muted" style="font-size:12px">SVN 프로젝트라 쓸 수 없어요</span></span></label>
+</div>
+
+<div class="field">
+<span class="lbl">셸</span>
+<div role="radiogroup" aria-label="셸" style="display:flex;gap:6px;flex-wrap:wrap">
+<label class="seg" style="background:#172036;box-shadow:inset 0 0 0 1.5px #2F6FE4;color:#E8EAF0"><input type="radio" name="sh" checked style="accent-color:#6EA8FF"> PowerShell 7</label>
+<label class="seg"><input type="radio" name="sh" style="accent-color:#6EA8FF"> WSL · Ubuntu</label>
+<label class="seg"><input type="radio" name="sh" style="accent-color:#6EA8FF"> Git Bash</label>
+<label class="seg"><input type="radio" name="sh" style="accent-color:#6EA8FF"> cmd</label>
+</div>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px">
+<div class="field">
+<label for="ns-ag" class="lbl">에이전트</label>
+<select id="ns-ag" class="input"><option>Claude Code</option><option>Codex</option><option>직접 입력</option></select>
+</div>
+<div class="field">
+<label for="ns-acc" class="lbl">계정</label>
+<select id="ns-acc" class="input"><option>업무 · 5시간 62% 사용</option><option>개인 · 5시간 18% 사용</option></select>
+</div>
+</div>
+
+<div style="display:flex;align-items:flex-start;gap:10px;background:#221B0E;border-radius:10px;padding:12px 14px;font-size:12.5px;line-height:19px;color:#EBC277">
+<svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="margin-top:2px"><path d="M12 3l9 16H3z"></path><path d="M12 10v4M12 17h.01"></path></svg>
+<span>이 폴더에서 이미 "결석계 API 추가" 세션이 작업 중이에요. 같은 파일을 고치게 되면 바로 알려드려요.</span>
+</div>
+
+</div>
+<div style="display:flex;align-items:center;gap:8px;padding:16px 24px 22px">
+<span class="dim mono" style="font-size:11.5px;flex:1">pwsh -wd D:\work\gov-portal -c claude</span>
+<button class="btn">취소</button>
+<button class="btn primary">세션 열기</button>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

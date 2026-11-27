@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>패널 1개 레이아웃</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0E1014}
+a{color:#8DBAFF}a:hover{color:#B8D4FF}
+.mono{font-family:'JetBrains Mono',monospace}
+.muted{color:#A0A8B8}
+.dim{color:#8A93A5}
+.btn{font-family:inherit;font-size:13px;border-radius:8px;border:0;background:#1F242E;color:#E8EAF0;padding:7px 12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn.primary{background:#2F6FE4;color:#fff;font-weight:500}
+.btn.ghost{background:transparent;color:#A0A8B8}
+.icon{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.badge{display:inline-flex;align-items:center;font-size:10.5px;font-weight:600;border-radius:5px;padding:1px 6px;line-height:16px}
+.sess{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:9px;text-decoration:none;color:#E8EAF0}
+.mini{height:4px;width:44px;border-radius:2px;background:#262B36;overflow:hidden;flex:none}
+.mini>span{display:block;height:100%}
+.panel{display:flex;flex-direction:column;border-radius:12px;background:#14171D;overflow:hidden;min-height:0}
+.ph{display:flex;align-items:center;gap:12px;padding:12px 14px 10px}
+.term{font-family:'JetBrains Mono',monospace;font-size:13px;line-height:21px;color:#C7CCD6;padding:4px 18px 14px;white-space:pre-wrap;flex:1;overflow:hidden}
+.ph-name{display:flex;align-items:center;gap:8px}
+.tw{font-family:'JetBrains Mono',monospace;font-size:13px;line-height:21px;color:#D5D9E0;padding:10px 18px 14px;flex:1;overflow:hidden;background:#0B0D10;display:flex;flex-direction:column;justify-content:flex-end;min-height:0}
+.ln{white-space:pre-wrap;min-height:21px}
+.tg{color:#4CC79A}.to{color:#E58A5B}.td{color:#8A93A5}.ty{color:#F2B54A}
+.tbox{border:1px solid #3A404E;border-radius:6px;padding:6px 10px;margin:6px 0}
+.tperm{border:1px solid #8A6A2A;border-radius:6px;padding:8px 12px;margin:6px 0 2px}
+.tadd{background:#12301F;color:#B9EBCF}.tdel{background:#3A1A1E;color:#F6B8BD}
+</style>
+</helmet>
+<div style="width:100%;min-height:900px;display:flex;flex-direction:column;font-family:'Noto Sans KR',sans-serif;color:#E8EAF0;background:#0E1014">
+<header style="height:52px;display:flex;align-items:center;gap:14px;padding:0 16px;flex-wrap:wrap">
+<div style="display:flex;align-items:center;gap:9px;font-weight:700;font-size:14px"><span style="width:24px;height:24px;border-radius:7px;background:#2F6FE4;display:flex;align-items:center;justify-content:center"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="color:#fff;width:14px;height:14px"><rect x="3" y="3" width="8" height="8" rx="2"></rect><rect x="13" y="3" width="8" height="8" rx="2"></rect><rect x="3" y="13" width="8" height="8" rx="2"></rect><rect x="13" y="13" width="8" height="8" rx="2"></rect></svg></span>Lmux</div>
+<button class="btn" style="flex:0 1 380px;justify-content:flex-start;color:#8A93A5;background:#161A21;margin-left:12px"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>세션, 프로젝트, 명령 검색<span class="mono" style="margin-left:auto;font-size:11px;background:#1F242E;border-radius:4px;padding:1px 6px">Ctrl K</span></button>
+<div style="flex:1"></div>
+<div style="display:flex;align-items:center;gap:6px;background:#161A21;border-radius:9px;padding:6px 10px;font-size:12px"><span class="muted">업무</span><div class="mini" style="width:56px"><span style="width:62%;background:#6EA8FF"></span></div><span class="mono">62%</span><span style="width:1px;height:14px;background:#2A303B;margin:0 6px"></span><span class="muted">개인</span><div class="mini" style="width:56px"><span style="width:18%;background:#6EA8FF"></span></div><span class="mono">18%</span></div>
+<span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#4CC79A;background:#132520;border-radius:9px;padding:7px 10px">폰 연결됨</span>
+</header>
+
+<div style="flex:1;display:flex;flex-wrap:wrap;min-height:0;padding:0 10px 10px;gap:10px">
+<aside style="flex:1 1 280px;max-width:300px;background:#14171D;border-radius:12px;padding:14px 10px;display:flex;flex-direction:column;gap:16px">
+<div style="font-size:12px;font-weight:600;color:#A0A8B8;padding:0 6px">프로젝트</div>
+<div style="display:flex;flex-direction:column;gap:2px">
+<div style="display:flex;align-items:center;gap:8px;padding:4px 8px 6px"><span style="font-size:13.5px;font-weight:500;flex:1">gov-portal</span><span class="badge" style="background:#2A2140;color:#C3A8FF">SVN</span></div>
+<a class="sess" href="#" style="background:#251F12;box-shadow:inset 0 0 0 1.5px #5C4515"><span style="width:8px;height:8px;border-radius:50%;background:#F2B54A;flex:none"></span><span style="flex:1;min-width:0"><span style="display:block;font-size:13px">급식 신청 화면 수정</span><span style="display:block;font-size:11px;color:#E9B85E">입력 대기 · 보는 중</span></span><span style="display:flex;flex-direction:column;align-items:flex-end;gap:3px"><span class="mono" style="font-size:11px;color:#F2B54A">84%</span><span class="mini"><span style="width:84%;background:#F2B54A"></span></span></span></a>
+<a class="sess" href="#"><span style="width:8px;height:8px;border-radius:50%;background:#6EA8FF;flex:none"></span><span style="flex:1;min-width:0"><span style="display:block;font-size:13px">결석계 API 추가</span><span style="display:block;font-size:11px" class="muted">작업 중 · 숨김</span></span><span style="display:flex;flex-direction:column;align-items:flex-end;gap:3px"><span class="mono" style="font-size:11px">46%</span><span class="mini"><span style="width:46%;background:#6EA8FF"></span></span></span></a>
+</div>
+<div style="display:flex;flex-direction:column;gap:2px">
+<div style="display:flex;align-items:center;gap:8px;padding:4px 8px 6px"><span style="font-size:13.5px;font-weight:500;flex:1">portfolio-cms</span><span class="badge" style="background:#1B2B22;color:#7FD8AE">Git</span></div>
+<a class="sess" href="#"><span style="width:8px;height:8px;border-radius:50%;background:#6EA8FF;flex:none"></span><span style="flex:1;min-width:0"><span style="display:block;font-size:13px">로그인 JWT 인증</span><span style="display:block;font-size:11px" class="muted">작업 중 · 숨김</span></span><span style="display:flex;flex-direction:column;align-items:flex-end;gap:3px"><span class="mono" style="font-size:11px">33%</span><span class="mini"><span style="width:33%;background:#6EA8FF"></span></span></span></a>
+</div>
+<div style="flex:1"></div>
+<div class="dim" style="font-size:11.5px;padding:0 6px;line-height:18px">숨긴 세션도 계속 돌아가요. 화면만 그리지 않아요.</div>
+<button class="btn primary" style="justify-content:center;padding:10px">새 세션</button>
+</aside>
+
+<main style="flex:999 1 560px;min-width:0;display:flex;flex-direction:column;gap:10px">
+<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+<div role="group" aria-label="분할 레이아웃" style="display:flex;gap:2px;background:#14171D;border-radius:9px;padding:3px">
+<button class="btn" style="padding:5px 8px;background:#262C38" aria-label="1개" aria-pressed="true"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"></rect></svg></button>
+<button class="btn ghost" style="padding:5px 8px" aria-label="2개"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"></rect><path d="M12 4v16"></path></svg></button>
+<button class="btn ghost" style="padding:5px 8px" aria-label="3개"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"></rect><path d="M12 4v16M12 12h8"></path></svg></button>
+<button class="btn ghost" style="padding:5px 8px" aria-label="4개"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"></rect><path d="M12 4v16M4 12h16"></path></svg></button>
+</div>
+<span class="dim" style="font-size:12px">1개 · 집중 모드</span>
+<div style="flex:1"></div>
+<span class="dim" style="font-size:12px">다른 세션이 입력을 기다리면 여기 알려드려요</span>
+</div>
+
+<section class="panel" style="flex:1">
+<div class="ph">
+<div style="flex:1;min-width:0">
+<div class="ph-name"><span style="width:8px;height:8px;border-radius:50%;background:#F2B54A"></span><span style="font-size:15px;font-weight:500">급식 신청 화면 수정</span><span style="font-size:12px;color:#F2B54A;font-weight:500">입력 대기</span></div>
+<div class="dim" style="font-size:12px;margin-top:3px">gov-portal · <span class="mono">D:\work\gov-portal</span> · PowerShell · Claude Code · 업무 계정</div>
+</div>
+<div style="display:flex;align-items:center;gap:10px" role="img" aria-label="컨텍스트 84% 사용">
+<span style="display:flex;flex-direction:column;align-items:flex-end;line-height:16px"><span class="dim" style="font-size:11px">컨텍스트</span><span class="mono" style="font-size:12px"><b style="color:#F2B54A">168K</b> / 200K</span></span>
+<svg viewBox="0 0 24 24" style="width:38px;height:38px" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="#262B36" stroke-width="2.6"></circle><circle cx="12" cy="12" r="9" fill="none" stroke="#F2B54A" stroke-width="2.6" stroke-dasharray="47.5 56.5" stroke-linecap="round" transform="rotate(-90 12 12)"></circle><text x="12" y="13.6" text-anchor="middle" font-size="5.6" font-family="JetBrains Mono" fill="#F2B54A" font-weight="600">84</text></svg>
+</div>
+<button class="btn ghost" style="padding:6px" aria-label="패널 메뉴"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1"></circle><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle></svg></button>
+</div>
+<div class="tw">
+<div class="ln td">PS D:\work\gov-portal&gt; claude</div>
+<div class="tbox" style="border-color:#7A4A36;max-width:520px">
+<div class="ln"><span class="to">✻</span> Welcome to <b style="font-weight:600">Claude Code</b>!</div>
+<div class="ln"> </div>
+<div class="ln td">  /help for help, /status for your current setup</div>
+<div class="ln"> </div>
+<div class="ln td">  cwd: D:\work\gov-portal</div>
+</div>
+<div class="ln"> </div>
+<div class="ln td">&gt; 신청 기간이 지나면 신청 버튼을 막고 안내 문구를 보여줘</div>
+<div class="ln"> </div>
+<div class="ln"><span class="tg">⏺</span> Read(src/main/webapp/WEB-INF/jsp/milk/apply.jsp)</div>
+<div class="ln td">  ⎿  Read 120 lines (ctrl+r to expand)</div>
+<div class="ln"><span class="tg">⏺</span> Read(src/main/java/.../milk/MilkApplyController.java)</div>
+<div class="ln td">  ⎿  Read 88 lines (ctrl+r to expand)</div>
+<div class="ln"><span class="tg">⏺</span> Update(src/main/webapp/WEB-INF/jsp/milk/apply.jsp)</div>
+<div class="ln td">  ⎿  Updated apply.jsp with 8 additions and 1 removal</div>
+<div class="ln" style="padding-left:5ch"><span class="td">41 </span>  &lt;form id="applyForm" action="/milk/apply.do"&gt;</div>
+<div class="ln tdel" style="margin-left:5ch">42 -    &lt;button type="submit"&gt;신청&lt;/button&gt;</div>
+<div class="ln tadd" style="margin-left:5ch">42 +    &lt;c:if test="${period.closed}"&gt;</div>
+<div class="ln tadd" style="margin-left:5ch">43 +      &lt;p class="notice"&gt;신청 기간이 끝났어요.&lt;/p&gt;</div>
+<div class="ln"> </div>
+<div class="ln">⏺ 화면은 끝났어요. 서버에서도 신청 기간을 확인하도록 컨트롤러를 고칠게요.</div>
+<div class="tperm">
+<div class="ln ty">Edit file</div>
+<div class="tbox" style="padding:4px 0">
+<div class="ln td" style="padding:0 10px">src/main/java/.../milk/MilkApplyController.java</div>
+<div class="ln" style="padding:0 10px"><span class="td">45 </span>  public ResponseEntity&lt;?&gt; apply(@RequestBody MilkApplyDto dto) {</div>
+<div class="ln tadd" style="padding:0 10px">46 +   if (period.isClosed()) return badRequest("신청 기간이 아니에요");</div>
+<div class="ln" style="padding:0 10px"><span class="td">47 </span>    return ApiResponse.ok(service.apply(dto));</div>
+</div>
+<div class="ln">Do you want to make this edit to <b style="font-weight:600">MilkApplyController.java</b>?</div>
+<div class="ln ty">❯ 1. Yes</div>
+<div class="ln">  2. Yes, and don't ask again this session <span class="td">(shift+tab)</span></div>
+<div class="ln">  3. No, and tell Claude what to do differently <span class="td">(esc)</span></div>
+</div>
+</div>
+<div style="display:flex;gap:6px;padding:10px 14px;background:#191C23;flex-wrap:wrap">
+<button class="btn primary">1 · 예</button>
+<button class="btn">2 · 세션 동안 허용</button>
+<button class="btn">3 · 아니요</button>
+</div>
+</section>
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>설정 · 화면</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0E1014}
+a{color:#8DBAFF}a:hover{color:#B8D4FF}
+.mono{font-family:'JetBrains Mono',monospace}
+.muted{color:#A0A8B8}.dim{color:#8A93A5}
+.btn{font-family:inherit;font-size:13px;border-radius:8px;border:0;background:#1F242E;color:#E8EAF0;padding:8px 13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.nav{display:block;padding:9px 12px;border-radius:8px;font-size:13.5px;color:#C7CCD6;text-decoration:none}
+.card{background:#14171D;border-radius:12px;padding:4px 20px}
+.item{display:flex;align-items:center;gap:12px;padding:14px 0;border-top:1px solid #1F242D;font-size:13.5px;flex-wrap:wrap}
+.item:first-child{border-top:0}
+.sw{width:38px;height:22px;border-radius:999px;border:0;padding:3px;display:inline-flex;cursor:pointer;background:#3A4152;flex:none}
+.sw.on{background:#2F6FE4;justify-content:flex-end}
+.sw>span{width:16px;height:16px;border-radius:50%;background:#fff}
+.input{font-family:inherit;font-size:13px;background:#0E1014;border:1px solid #262B36;border-radius:8px;color:#E8EAF0;padding:7px 10px}
+.h2{margin:0 0 8px;font-size:14px;font-weight:600;color:#C7CCD6}
+.theme{display:flex;flex-direction:column;gap:8px;padding:10px;border-radius:12px;background:#14171D;cursor:pointer;font-size:13px;border:0;color:#E8EAF0;font-family:inherit;text-align:left}
+.sw2{width:30px;height:30px;border-radius:50%;border:0;cursor:pointer}
+</style>
+</helmet>
+<div style="width:100%;min-height:900px;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;color:#E8EAF0;background:#0E1014;display:flex;flex-wrap:wrap;gap:10px;padding:10px">
+<nav aria-label="설정 메뉴" style="flex:1 1 220px;max-width:240px;background:#14171D;border-radius:12px;padding:20px 10px;display:flex;flex-direction:column;gap:2px">
+<div style="font-size:18px;font-weight:700;padding:0 12px 14px">설정</div>
+<a class="nav" href="Settings.dc.html">셸 프로필</a>
+<a class="nav" href="SetNotify.dc.html">알림</a>
+<a class="nav" href="SetLook.dc.html" style="background:#1E2330;color:#E8EAF0" aria-current="page">화면</a>
+<a class="nav" href="SetPerf.dc.html">성능</a>
+<a class="nav" href="SetKeys.dc.html">단축키</a>
+<a class="nav" href="SetAbout.dc.html">정보 · 업데이트</a>
+</nav>
+<div style="flex:999 1 560px;min-width:0;padding:18px 28px;display:flex;flex-direction:column;gap:22px;max-width:920px">
+<div><h1 style="margin:0;font-size:22px;font-weight:700">화면</h1><p class="muted" style="margin:4px 0 0;font-size:13px">테마, 글꼴, 패널에 보일 정보를 정해요.</p></div>
+
+<section>
+<h2 class="h2">테마</h2>
+<div role="radiogroup" aria-label="테마" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px">
+<button class="theme" role="radio" aria-checked="true" style="box-shadow:inset 0 0 0 2px #2F6FE4"><span style="display:flex;height:72px;border-radius:8px;background:#0E1014;padding:8px;gap:6px"><span style="width:30%;background:#14171D;border-radius:4px"></span><span style="flex:1;background:#0B0D10;border-radius:4px"></span></span>다크</button>
+<button class="theme" role="radio" aria-checked="false"><span style="display:flex;height:72px;border-radius:8px;background:#F4F5F7;padding:8px;gap:6px"><span style="width:30%;background:#FFFFFF;border-radius:4px"></span><span style="flex:1;background:#E9EBEF;border-radius:4px"></span></span>라이트</button>
+<button class="theme" role="radio" aria-checked="false"><span style="display:flex;height:72px;border-radius:8px;background:linear-gradient(90deg,#0E1014 50%,#F4F5F7 50%);padding:8px;gap:6px"></span>Windows 설정 따라가기</button>
+</div>
+</section>
+
+<section>
+<h2 class="h2">기본</h2>
+<div class="card">
+<div class="item"><span style="flex:1">강조색</span>
+<div role="radiogroup" aria-label="강조색" style="display:flex;gap:8px">
+<button class="sw2" style="background:#2F6FE4;box-shadow:0 0 0 2px #14171D,0 0 0 4px #6EA8FF" role="radio" aria-checked="true" aria-label="파랑"></button>
+<button class="sw2" style="background:#7C5CE0" role="radio" aria-checked="false" aria-label="보라"></button>
+<button class="sw2" style="background:#1E9E73" role="radio" aria-checked="false" aria-label="초록"></button>
+<button class="sw2" style="background:#C8563F" role="radio" aria-checked="false" aria-label="주황"></button>
+</div></div>
+<div class="item"><span style="flex:1">언어</span><select class="input" aria-label="언어"><option>한국어</option><option>English</option></select></div>
+<div class="item"><span style="flex:1">밀도<br><span class="dim" style="font-size:12px">조밀하게 하면 패널 헤더와 목록 간격이 줄어요</span></span>
+<div role="radiogroup" aria-label="밀도" style="display:flex;gap:2px;background:#0E1014;border-radius:8px;padding:3px"><button class="btn" style="padding:5px 12px;background:#262C38" role="radio" aria-checked="true">기본</button><button class="btn" style="padding:5px 12px;background:transparent;color:#A0A8B8" role="radio" aria-checked="false">조밀</button></div></div>
+</div>
+</section>
+
+<section>
+<h2 class="h2">터미널</h2>
+<div class="card">
+<div class="item"><span style="flex:1">글꼴</span><select class="input" aria-label="글꼴"><option>JetBrains Mono</option><option>D2Coding</option><option>Cascadia Code</option><option>Consolas</option></select></div>
+<div class="item"><span style="flex:1">크기 · 줄 간격</span><input class="input mono" style="width:60px" value="13" aria-label="크기"><span class="dim">px</span><input class="input mono" style="width:60px" value="1.6" aria-label="줄 간격"></div>
+<div class="item" style="display:block">
+<div class="mono" style="background:#0B0D10;border-radius:9px;padding:12px 14px;font-size:13px;line-height:21px;color:#D5D9E0;white-space:pre-wrap"><span style="color:#4CC79A">⏺</span> Update(apply.jsp)
+<span style="color:#8A93A5">  ⎿  Updated apply.jsp with 8 additions</span>
+⏺ 미리보기: 한글과 English가 섞여도 줄이 맞아요.</div>
+</div>
+<div class="item"><span style="flex:1">커서 모양</span><select class="input" aria-label="커서"><option>블록</option><option>밑줄</option><option>세로줄</option></select></div>
+</div>
+</section>
+
+<section>
+<h2 class="h2">패널 헤더에 보일 것</h2>
+<div class="card">
+<div class="item"><span style="flex:1">컨텍스트 링과 퍼센트</span><button class="sw on" role="switch" aria-checked="true" aria-label="컨텍스트 링"><span></span></button></div>
+<div class="item"><span style="flex:1">토큰 숫자 (168K / 200K)</span><button class="sw on" role="switch" aria-checked="true" aria-label="토큰 숫자"><span></span></button></div>
+<div class="item"><span style="flex:1">프로젝트 경로</span><button class="sw on" role="switch" aria-checked="true" aria-label="경로"><span></span></button></div>
+<div class="item"><span style="flex:1">셸 · 에이전트 · 계정</span><button class="sw on" role="switch" aria-checked="true" aria-label="셸 에이전트 계정"><span></span></button></div>
+<div class="item"><span style="flex:1">승인 버튼 줄 (터미널 아래)</span><button class="sw on" role="switch" aria-checked="true" aria-label="승인 버튼"><span></span></button></div>
+</div>
+</section>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

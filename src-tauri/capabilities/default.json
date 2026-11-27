@@ -1,0 +1,27 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Capability for the main window",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "dialog:allow-open",
+    "allow-app-state",
+    "allow-shells-list",
+    "allow-project-detect",
+    "allow-project-add",
+    "allow-project-remove",
+    "allow-session-create",
+    "allow-session-delete",
+    "allow-session-start",
+    "allow-session-attach",
+    "allow-session-detach",
+    "allow-session-ack",
+    "allow-session-write",
+    "allow-session-resize",
+    "allow-session-kill",
+    "allow-layout-set",
+    "allow-layout-save",
+    "allow-layout-delete"
+  ]
+}

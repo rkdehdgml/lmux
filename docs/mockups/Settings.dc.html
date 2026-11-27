@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>설정 · 셸 프로필</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0E1014}
+a{color:#8DBAFF}a:hover{color:#B8D4FF}
+.mono{font-family:'JetBrains Mono',monospace}
+.muted{color:#A0A8B8}.dim{color:#8A93A5}
+.btn{font-family:inherit;font-size:13px;border-radius:8px;border:0;background:#1F242E;color:#E8EAF0;padding:8px 13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn.primary{background:#2F6FE4;color:#fff;font-weight:500}
+.nav{display:block;padding:9px 12px;border-radius:8px;font-size:13.5px;color:#C7CCD6;text-decoration:none}
+.card{background:#14171D;border-radius:12px;padding:18px 20px}
+.input{font-family:inherit;font-size:13px;background:#0E1014;border:1px solid #262B36;border-radius:8px;color:#E8EAF0;padding:8px 10px}
+.field{display:flex;flex-direction:column;gap:6px;font-size:13px}
+.lbl{color:#C7CCD6;font-weight:500}
+.prof{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;font-size:13.5px}
+.sw{width:38px;height:22px;border-radius:999px;border:0;padding:3px;display:inline-flex;cursor:pointer;background:#3A4152;flex:none}
+.sw.on{background:#2F6FE4;justify-content:flex-end}
+.sw>span{width:16px;height:16px;border-radius:50%;background:#fff}
+</style>
+</helmet>
+<div style="width:100%;min-height:900px;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;color:#E8EAF0;background:#0E1014;display:flex;flex-wrap:wrap;gap:10px;padding:10px">
+<nav aria-label="설정 메뉴" style="flex:1 1 220px;max-width:240px;background:#14171D;border-radius:12px;padding:20px 10px;display:flex;flex-direction:column;gap:2px">
+<div style="font-size:18px;font-weight:700;padding:0 12px 14px">설정</div>
+<a class="nav" href="Settings.dc.html" style="background:#1E2330;color:#E8EAF0" aria-current="page">셸 프로필</a>
+<a class="nav" href="SetNotify.dc.html">알림</a>
+<a class="nav" href="SetLook.dc.html">화면</a>
+<a class="nav" href="SetPerf.dc.html">성능</a>
+<a class="nav" href="SetKeys.dc.html">단축키</a>
+<a class="nav" href="SetAbout.dc.html">정보 · 업데이트</a>
+</nav>
+<div style="flex:999 1 560px;min-width:0;padding:18px 28px;display:flex;flex-direction:column;gap:20px;max-width:1000px">
+<div style="display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap">
+<div style="flex:1;min-width:240px"><h1 style="margin:0;font-size:22px;font-weight:700">셸 프로필</h1><p class="muted" style="margin:4px 0 0;font-size:13px">세션을 열 때 고를 수 있는 셸이에요. 프로젝트마다 기본 셸을 따로 정할 수 있어요.</p></div>
+<button class="btn">WSL 배포판 다시 찾기</button>
+<button class="btn primary">+ 프로필 추가</button>
+</div>
+
+<div style="display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start">
+<div class="card" style="flex:1 1 260px;max-width:300px;padding:8px;display:flex;flex-direction:column;gap:2px">
+<div class="prof" style="background:#1C2130"><span style="width:10px;height:10px;border-radius:3px;background:#6EA8FF"></span><span style="flex:1">PowerShell 7</span><span style="font-size:11px;color:#8DBAFF">기본</span></div>
+<div class="prof"><span style="width:10px;height:10px;border-radius:3px;background:#F2B54A"></span><span style="flex:1">WSL · Ubuntu</span><span class="dim" style="font-size:11px">자동 감지</span></div>
+<div class="prof"><span style="width:10px;height:10px;border-radius:3px;background:#4CC79A"></span><span style="flex:1">Git Bash</span></div>
+<div class="prof"><span style="width:10px;height:10px;border-radius:3px;background:#A0A8B8"></span><span style="flex:1">cmd</span></div>
+</div>
+
+<div class="card" style="flex:999 1 420px;display:flex;flex-direction:column;gap:16px">
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px">
+<div class="field"><label for="sp-name" class="lbl">이름</label><input id="sp-name" class="input" value="PowerShell 7"></div>
+<div class="field"><span class="lbl">색 표시</span><div style="display:flex;gap:6px" role="radiogroup" aria-label="색 표시">
+<button class="btn" style="width:32px;height:32px;padding:0;background:#6EA8FF;box-shadow:0 0 0 2px #0E1014,0 0 0 4px #6EA8FF" role="radio" aria-checked="true" aria-label="파랑"></button>
+<button class="btn" style="width:32px;height:32px;padding:0;background:#F2B54A" role="radio" aria-checked="false" aria-label="주황"></button>
+<button class="btn" style="width:32px;height:32px;padding:0;background:#4CC79A" role="radio" aria-checked="false" aria-label="초록"></button>
+<button class="btn" style="width:32px;height:32px;padding:0;background:#C3A8FF" role="radio" aria-checked="false" aria-label="보라"></button>
+</div></div>
+</div>
+<div class="field"><label for="sp-exe" class="lbl">실행 파일</label><div style="display:flex;gap:8px"><input id="sp-exe" class="input mono" style="flex:1" value="C:\Program Files\PowerShell\7\pwsh.exe"><button class="btn">찾아보기</button></div></div>
+<div class="field"><label for="sp-args" class="lbl">인수</label><input id="sp-args" class="input mono" value="-NoLogo"></div>
+<div class="field"><span class="lbl">시작 폴더</span>
+<div style="display:flex;gap:6px;flex-wrap:wrap">
+<label class="btn" style="background:#172036;box-shadow:inset 0 0 0 1.5px #2F6FE4"><input type="radio" name="sd" checked style="accent-color:#6EA8FF"> 세션의 프로젝트 폴더</label>
+<label class="btn"><input type="radio" name="sd" style="accent-color:#6EA8FF"> 고정 경로</label>
+</div></div>
+<div class="field"><span class="lbl">환경 변수</span>
+<div style="background:#0E1014;border-radius:9px;padding:6px">
+<div style="display:flex;gap:6px;padding:4px"><input class="input mono" style="flex:1" value="JAVA_HOME" aria-label="변수 이름"><input class="input mono" style="flex:2" value="C:\jdk-17" aria-label="값"></div>
+<div style="display:flex;gap:6px;padding:4px"><input class="input mono" style="flex:1" value="NLS_LANG" aria-label="변수 이름"><input class="input mono" style="flex:2" value="KOREAN_KOREA.AL32UTF8" aria-label="값"></div>
+<button class="btn" style="background:transparent;color:#8DBAFF;font-size:12px">+ 변수 추가</button>
+</div></div>
+<div style="display:flex;align-items:center;gap:12px;font-size:13.5px;padding-top:4px;border-top:1px solid #1F242D">
+<span style="flex:1;padding-top:12px">한글 깨짐 방지 (UTF-8로 시작)<br><span class="dim" style="font-size:12px">시작할 때 <span class="mono">chcp 65001</span>을 먼저 실행해요</span></span>
+<button class="sw on" role="switch" aria-checked="true" aria-label="UTF-8로 시작" style="margin-top:12px"><span></span></button>
+</div>
+<div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap">
+<button class="btn" style="color:#F27A82">삭제</button>
+<button class="btn">테스트 실행</button>
+<button class="btn primary">저장</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

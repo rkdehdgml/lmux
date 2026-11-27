@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>변경 사항과 SVN 커밋</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0E1014}
+a{color:#8DBAFF}a:hover{color:#B8D4FF}
+.mono{font-family:'JetBrains Mono',monospace}
+.muted{color:#A0A8B8}
+.dim{color:#8A93A5}
+.btn{font-family:inherit;font-size:13px;border-radius:8px;border:0;background:#1F242E;color:#E8EAF0;padding:9px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn.primary{background:#2F6FE4;color:#fff;font-weight:500}
+.icon{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.file{display:flex;align-items:center;gap:10px;padding:8px 10px;font-size:13px;border-radius:8px}
+.add{color:#4CC79A}.del{color:#F27A82}
+.code{font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:21px;white-space:pre}
+.badge{display:inline-flex;align-items:center;font-size:10.5px;font-weight:600;border-radius:5px;padding:1px 6px;line-height:16px}
+.who{font-size:10.5px;border-radius:5px;padding:1px 6px;line-height:16px}
+</style>
+</helmet>
+<div style="width:100%;min-height:900px;display:flex;align-items:center;justify-content:center;padding:40px 16px;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;color:#E8EAF0;background:#090B0E">
+<div role="dialog" aria-labelledby="mg-title" style="width:100%;max-width:1080px;background:#14171D;border-radius:16px;box-shadow:0 30px 80px #000000A0,0 0 0 1px #20252F;display:flex;flex-direction:column">
+<div style="display:flex;align-items:center;gap:12px;padding:20px 24px;flex-wrap:wrap">
+<div style="flex:1;min-width:240px">
+<div style="display:flex;align-items:center;gap:8px"><h2 id="mg-title" style="margin:0;font-size:18px;font-weight:700">변경 사항 · gov-portal</h2><span class="badge" style="background:#2A2140;color:#C3A8FF">SVN</span></div>
+<div class="muted" style="font-size:12.5px;margin-top:3px">작업 사본 <span class="mono">trunk @ r4821</span> · 파일 4개 <span class="mono add">+64</span> <span class="mono del">−9</span></div>
+</div>
+<div role="group" aria-label="세션별 보기" style="display:flex;gap:4px;background:#0E1014;border-radius:9px;padding:3px">
+<button class="btn" style="padding:6px 10px;background:#262C38">전체</button>
+<button class="btn" style="padding:6px 10px;background:transparent;color:#A0A8B8">급식 신청 세션</button>
+<button class="btn" style="padding:6px 10px;background:transparent;color:#A0A8B8">결석계 세션</button>
+</div>
+<button class="btn" style="background:transparent;padding:6px" aria-label="닫기"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+
+<div style="display:flex;flex-wrap:wrap;min-height:420px;gap:0;margin:0 16px;background:#0E1014;border-radius:12px;overflow:hidden">
+<div style="flex:1 1 300px;max-width:340px;padding:10px 8px;display:flex;flex-direction:column;gap:2px;background:#111318">
+<label class="file" style="background:#1C2130"><input type="checkbox" checked style="accent-color:#6EA8FF" aria-label="apply.jsp 커밋에 포함"><span class="mono" style="color:#F2B54A;font-size:11px">M</span><span style="flex:1;min-width:0">milk/apply.jsp</span><span class="who" style="background:#251F12;color:#E9B85E">급식</span></label>
+<label class="file" style="background:#221B0E"><input type="checkbox" checked style="accent-color:#6EA8FF" aria-label="MilkApplyController 커밋에 포함"><span class="mono" style="color:#F2B54A;font-size:11px">M</span><span style="flex:1;min-width:0">MilkApplyController.java</span><span class="who" style="background:#3A2C0C;color:#F2B54A">두 세션</span></label>
+<label class="file"><input type="checkbox" style="accent-color:#6EA8FF" aria-label="AbsenceMapper 커밋에 포함"><span class="mono" style="color:#F2B54A;font-size:11px">M</span><span style="flex:1;min-width:0">AbsenceMapper.xml</span><span class="who" style="background:#1C2130;color:#8DBAFF">결석계</span></label>
+<label class="file"><input type="checkbox" style="accent-color:#6EA8FF" aria-label="AbsenceApi 커밋에 포함"><span class="mono" style="color:#4CC79A;font-size:11px">?</span><span style="flex:1;min-width:0">AbsenceApiController.java</span><span class="who" style="background:#1C2130;color:#8DBAFF">결석계</span></label>
+<div class="dim" style="font-size:11.5px;padding:10px 10px 0;line-height:18px">세션이 고친 파일을 자동으로 표시해요. 체크한 파일만 커밋돼요.</div>
+</div>
+<div style="flex:999 1 480px;min-width:0;overflow:auto">
+<div style="padding:12px 18px;font-size:12px;display:flex;align-items:center;gap:8px" class="mono muted">MilkApplyController.java <span class="who" style="background:#3A2C0C;color:#F2B54A;font-family:'Noto Sans KR',sans-serif">두 세션이 고침</span></div>
+<div class="code" style="padding:0 0 12px">
+<div style="padding:0 18px" class="dim">@@ -42,7 +42,12 @@</div>
+<div style="padding:0 18px">   public ResponseEntity&lt;?&gt; apply(@RequestBody MilkApplyDto dto) {</div>
+<div style="padding:0 18px;background:#121F33;color:#9CC3FF">+    if (period.isClosed()) return badRequest("신청 기간이 아니에요");  <span style="font-family:'Noto Sans KR',sans-serif;font-size:10.5px">← 급식</span></div>
+<div style="padding:0 18px;background:#3A1A1E" class="del">-    return ResponseEntity.ok(service.apply(dto));</div>
+<div style="padding:0 18px;background:#123024" class="add">+    return ApiResponse.ok(service.apply(dto));  <span style="font-family:'Noto Sans KR',sans-serif;font-size:10.5px">← 결석계</span></div>
+<div style="padding:0 18px">   }</div>
+</div>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:10px;padding:16px 24px 22px">
+<div style="display:flex;align-items:center;gap:8px">
+<label for="mg-msg" style="font-size:13px;font-weight:500;color:#C7CCD6;flex:1">커밋 메시지</label>
+<button class="btn" style="padding:5px 10px;font-size:12px"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="width:14px;height:14px"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"></path></svg>세션 내용으로 작성</button>
+</div>
+<textarea id="mg-msg" class="mono" rows="2" style="font-size:13px;background:#0E1014;border:1px solid #262B36;border-radius:9px;color:#E8EAF0;padding:10px 12px;resize:none">[급식] 신청 기간 종료 시 신청 차단 및 안내 문구 추가</textarea>
+<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+<span class="dim" style="font-size:12px;flex:1">커밋 전에 <span class="mono">svn update</span>로 서버 변경을 먼저 받아요</span>
+<button class="btn">되돌리기 (svn revert)</button>
+<button class="btn primary">파일 2개 SVN 커밋</button>
+</div>
+<div class="dim" style="font-size:11.5px;border-top:1px solid #20252F;padding-top:10px">Git 프로젝트는 같은 자리에 커밋 · 워크트리 합치기 · PR 만들기가 보여요.</div>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

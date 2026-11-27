@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>설정 · 성능</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0E1014}
+a{color:#8DBAFF}a:hover{color:#B8D4FF}
+.mono{font-family:'JetBrains Mono',monospace}
+.muted{color:#A0A8B8}.dim{color:#8A93A5}
+.btn{font-family:inherit;font-size:13px;border-radius:8px;border:0;background:#1F242E;color:#E8EAF0;padding:8px 13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.nav{display:block;padding:9px 12px;border-radius:8px;font-size:13.5px;color:#C7CCD6;text-decoration:none}
+.card{background:#14171D;border-radius:12px;padding:4px 20px}
+.item{display:flex;align-items:center;gap:12px;padding:14px 0;border-top:1px solid #1F242D;font-size:13.5px;flex-wrap:wrap}
+.item:first-child{border-top:0}
+.sw{width:38px;height:22px;border-radius:999px;border:0;padding:3px;display:inline-flex;cursor:pointer;background:#3A4152;flex:none}
+.sw.on{background:#2F6FE4;justify-content:flex-end}
+.sw>span{width:16px;height:16px;border-radius:50%;background:#fff}
+.input{font-family:inherit;font-size:13px;background:#0E1014;border:1px solid #262B36;border-radius:8px;color:#E8EAF0;padding:7px 10px}
+.h2{margin:0 0 8px;font-size:14px;font-weight:600;color:#C7CCD6}
+.stat{background:#14171D;border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:4px}
+</style>
+</helmet>
+<div style="width:100%;min-height:900px;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;color:#E8EAF0;background:#0E1014;display:flex;flex-wrap:wrap;gap:10px;padding:10px">
+<nav aria-label="설정 메뉴" style="flex:1 1 220px;max-width:240px;background:#14171D;border-radius:12px;padding:20px 10px;display:flex;flex-direction:column;gap:2px">
+<div style="font-size:18px;font-weight:700;padding:0 12px 14px">설정</div>
+<a class="nav" href="Settings.dc.html">셸 프로필</a>
+<a class="nav" href="SetNotify.dc.html">알림</a>
+<a class="nav" href="SetLook.dc.html">화면</a>
+<a class="nav" href="SetPerf.dc.html" style="background:#1E2330;color:#E8EAF0" aria-current="page">성능</a>
+<a class="nav" href="SetKeys.dc.html">단축키</a>
+<a class="nav" href="SetAbout.dc.html">정보 · 업데이트</a>
+</nav>
+<div style="flex:999 1 560px;min-width:0;padding:18px 28px;display:flex;flex-direction:column;gap:22px;max-width:920px">
+<div><h1 style="margin:0;font-size:22px;font-weight:700">성능</h1><p class="muted" style="margin:4px 0 0;font-size:13px">세션이 많아도 가볍게 돌아가도록 조절해요.</p></div>
+
+<section>
+<h2 class="h2">지금 앱 상태 <span class="dim" style="font-weight:400;font-size:12px">· 예시 값</span></h2>
+<div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px">
+<div class="stat"><span class="dim" style="font-size:12px">앱 메모리</span><span class="mono" style="font-size:20px;font-weight:600">[측정값]</span><span class="dim" style="font-size:11.5px">에이전트 프로세스 제외</span></div>
+<div class="stat"><span class="dim" style="font-size:12px">CPU</span><span class="mono" style="font-size:20px;font-weight:600">[측정값]</span><span class="dim" style="font-size:11.5px">최근 1분 평균</span></div>
+<div class="stat"><span class="dim" style="font-size:12px">세션</span><span class="mono" style="font-size:20px;font-weight:600">4</span><span class="dim" style="font-size:11.5px">화면에 그리는 중 2</span></div>
+<div class="stat"><span class="dim" style="font-size:12px">렌더링</span><span style="font-size:16px;font-weight:600;color:#4CC79A">WebGL</span><span class="dim" style="font-size:11.5px">GPU 가속 켜짐</span></div>
+</div>
+</section>
+
+<section>
+<h2 class="h2">렌더링</h2>
+<div class="card">
+<div class="item"><span style="flex:1">숨긴 세션은 그리지 않기<br><span class="dim" style="font-size:12px">세션은 계속 돌고, 출력만 쌓아 두다가 보일 때 한 번에 그려요</span></span><button class="sw on" role="switch" aria-checked="true" aria-label="숨긴 세션 그리지 않기"><span></span></button></div>
+<div class="item"><span style="flex:1">GPU 가속 (WebGL)<br><span class="dim" style="font-size:12px">끄면 호환성은 좋아지지만 출력이 많을 때 느려질 수 있어요</span></span><button class="sw on" role="switch" aria-checked="true" aria-label="GPU 가속"><span></span></button></div>
+<div class="item"><span style="flex:1">세션당 스크롤백</span><select class="input" aria-label="스크롤백"><option>10,000줄</option><option>5,000줄</option><option>50,000줄</option></select></div>
+<div class="item"><span style="flex:1">창이 내려가 있을 때 화면 갱신 멈추기</span><button class="sw on" role="switch" aria-checked="true" aria-label="최소화 시 갱신 멈춤"><span></span></button></div>
+</div>
+</section>
+
+<section>
+<h2 class="h2">갱신 주기</h2>
+<div class="card">
+<div class="item"><span style="flex:1">계정 사용량</span><select class="input" aria-label="사용량 주기"><option>30초</option><option>1분</option><option>5분</option></select></div>
+<div class="item"><span style="flex:1">세션 상태 · 컨텍스트<br><span class="dim" style="font-size:12px">Claude Code 훅 이벤트로 바로 반영돼요. 훅이 없는 에이전트만 주기적으로 확인해요</span></span><select class="input" aria-label="상태 주기"><option>이벤트 즉시</option></select></div>
+</div>
+</section>
+
+<section>
+<h2 class="h2">실행</h2>
+<div class="card">
+<div class="item"><span style="flex:1">에이전트가 일하는 동안 절전 모드 막기</span><button class="sw on" role="switch" aria-checked="true" aria-label="절전 막기"><span></span></button></div>
+<div class="item"><span style="flex:1">창을 닫으면 트레이로 (세션 유지)</span><button class="sw on" role="switch" aria-checked="true" aria-label="트레이"><span></span></button></div>
+<div class="item"><span style="flex:1">Windows 시작할 때 실행</span><button class="sw" role="switch" aria-checked="false" aria-label="시작 시 실행"><span></span></button></div>
+<div class="item"><span style="flex:1">다시 열면 이전 세션과 화면 배치 복원</span><button class="sw on" role="switch" aria-checked="true" aria-label="세션 복원"><span></span></button></div>
+</div>
+</section>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

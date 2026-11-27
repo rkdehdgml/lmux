@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>프로젝트 등록</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0E1014}
+a{color:#8DBAFF}a:hover{color:#B8D4FF}
+.mono{font-family:'JetBrains Mono',monospace}
+.muted{color:#A0A8B8}
+.btn{font-family:inherit;font-size:13px;border-radius:8px;border:0;background:#1F242E;color:#E8EAF0;padding:9px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn.primary{background:#2F6FE4;color:#fff;font-weight:500}
+.icon{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.field{display:flex;flex-direction:column;gap:7px;font-size:13px}
+.lbl{color:#C7CCD6;font-weight:500}
+.input{font-family:inherit;font-size:13px;background:#0E1014;border:1px solid #262B36;border-radius:9px;color:#E8EAF0;padding:10px 12px}
+.badge{display:inline-flex;align-items:center;font-size:10.5px;font-weight:600;border-radius:5px;padding:1px 6px;line-height:16px}
+</style>
+</helmet>
+<div style="width:100%;min-height:900px;display:flex;align-items:center;justify-content:center;padding:40px 16px;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;color:#E8EAF0;background:#090B0E">
+<div role="dialog" aria-labelledby="np-title" style="width:100%;max-width:580px;background:#14171D;border-radius:16px;box-shadow:0 30px 80px #000000A0,0 0 0 1px #20252F;display:flex;flex-direction:column">
+<div style="display:flex;align-items:flex-start;padding:22px 24px 6px">
+<div style="flex:1"><h2 id="np-title" style="margin:0;font-size:18px;font-weight:700">프로젝트 추가</h2><p class="muted" style="margin:4px 0 0;font-size:13px">작업할 폴더만 고르면 돼요. Git이 아니어도 괜찮아요.</p></div>
+<button class="btn" style="background:transparent;padding:6px" aria-label="닫기"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+<div style="padding:18px 24px;display:flex;flex-direction:column;gap:20px">
+
+<div class="field">
+<label for="np-path" class="lbl">프로젝트 폴더</label>
+<div style="display:flex;gap:8px">
+<input id="np-path" class="input mono" style="flex:1" value="D:\work\gov-portal">
+<button class="btn">찾아보기</button>
+</div>
+<div style="display:flex;align-items:center;gap:10px;background:#1B1730;border-radius:9px;padding:10px 12px">
+<span class="badge" style="background:#2A2140;color:#C3A8FF">SVN</span>
+<span style="font-size:12.5px;flex:1">SVN 작업 사본이에요 · <span class="mono muted">trunk @ r4821</span></span>
+<span style="font-size:12px;color:#4CC79A">감지됨</span>
+</div>
+<span class="muted" style="font-size:12px">Git · SVN · 일반 폴더를 자동으로 알아봐요. 버전 관리 종류에 따라 "변경 사항" 화면이 달라져요.</span>
+</div>
+
+<div class="field">
+<label for="np-name" class="lbl">표시 이름</label>
+<input id="np-name" class="input" value="gov-portal">
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px">
+<div class="field">
+<label for="np-shell" class="lbl">기본 셸</label>
+<select id="np-shell" class="input"><option>PowerShell 7</option><option>WSL · Ubuntu</option><option>Git Bash</option><option>cmd</option></select>
+</div>
+<div class="field">
+<label for="np-agent" class="lbl">기본 에이전트</label>
+<select id="np-agent" class="input"><option>Claude Code</option><option>Codex</option><option>직접 입력</option></select>
+</div>
+</div>
+
+<div style="display:flex;align-items:flex-start;gap:10px;background:#191C23;border-radius:10px;padding:12px 14px;font-size:12.5px;line-height:19px">
+<svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="color:#A0A8B8;margin-top:2px"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v4M12 16h.01"></path></svg>
+<span class="muted">한 폴더에서 세션을 여러 개 열 수 있어요. 두 세션이 같은 파일을 고치면 바로 알려드려요.</span>
+</div>
+
+</div>
+<div style="display:flex;justify-content:flex-end;gap:8px;padding:16px 24px 22px">
+<button class="btn">취소</button>
+<button class="btn primary">추가하고 세션 열기</button>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

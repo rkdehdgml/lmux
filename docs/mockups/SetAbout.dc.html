@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>설정 · 정보와 업데이트</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0E1014}
+a{color:#8DBAFF}a:hover{color:#B8D4FF}
+.mono{font-family:'JetBrains Mono',monospace}
+.muted{color:#A0A8B8}.dim{color:#8A93A5}
+.btn{font-family:inherit;font-size:13px;border-radius:8px;border:0;background:#1F242E;color:#E8EAF0;padding:8px 13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn.primary{background:#2F6FE4;color:#fff;font-weight:500}
+.nav{display:block;padding:9px 12px;border-radius:8px;font-size:13.5px;color:#C7CCD6;text-decoration:none}
+.card{background:#14171D;border-radius:12px;padding:4px 20px}
+.item{display:flex;align-items:center;gap:12px;padding:14px 0;border-top:1px solid #1F242D;font-size:13.5px;flex-wrap:wrap}
+.item:first-child{border-top:0}
+.sw{width:38px;height:22px;border-radius:999px;border:0;padding:3px;display:inline-flex;cursor:pointer;background:#3A4152;flex:none}
+.sw.on{background:#2F6FE4;justify-content:flex-end}
+.sw>span{width:16px;height:16px;border-radius:50%;background:#fff}
+.input{font-family:inherit;font-size:13px;background:#0E1014;border:1px solid #262B36;border-radius:8px;color:#E8EAF0;padding:7px 10px}
+.h2{margin:0 0 8px;font-size:14px;font-weight:600;color:#C7CCD6}
+</style>
+</helmet>
+<div style="width:100%;min-height:900px;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;color:#E8EAF0;background:#0E1014;display:flex;flex-wrap:wrap;gap:10px;padding:10px">
+<nav aria-label="설정 메뉴" style="flex:1 1 220px;max-width:240px;background:#14171D;border-radius:12px;padding:20px 10px;display:flex;flex-direction:column;gap:2px">
+<div style="font-size:18px;font-weight:700;padding:0 12px 14px">설정</div>
+<a class="nav" href="Settings.dc.html">셸 프로필</a>
+<a class="nav" href="SetNotify.dc.html">알림</a>
+<a class="nav" href="SetLook.dc.html">화면</a>
+<a class="nav" href="SetPerf.dc.html">성능</a>
+<a class="nav" href="SetKeys.dc.html">단축키</a>
+<a class="nav" href="SetAbout.dc.html" style="background:#1E2330;color:#E8EAF0" aria-current="page">정보 · 업데이트</a>
+</nav>
+<div style="flex:999 1 560px;min-width:0;padding:18px 28px;display:flex;flex-direction:column;gap:22px;max-width:920px">
+
+<div style="display:flex;align-items:center;gap:18px;background:#14171D;border-radius:14px;padding:22px;flex-wrap:wrap">
+<span style="width:56px;height:56px;border-radius:15px;background:#2F6FE4;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" aria-hidden="true" style="width:28px;height:28px;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><rect x="3" y="3" width="8" height="8" rx="2"></rect><rect x="13" y="3" width="8" height="8" rx="2"></rect><rect x="3" y="13" width="8" height="8" rx="2"></rect><rect x="13" y="13" width="8" height="8" rx="2"></rect></svg></span>
+<div style="flex:1;min-width:200px">
+<h1 style="margin:0;font-size:22px;font-weight:700">Lmux</h1>
+<div class="muted" style="font-size:13px;margin-top:3px">가벼운 AI 에이전트 멀티플렉서 · <span class="mono">v0.1.0</span></div>
+<div style="font-size:12.5px;color:#4CC79A;margin-top:6px">✓ 최신 버전이에요 · 방금 확인</div>
+</div>
+<button class="btn">업데이트 확인</button>
+</div>
+
+<section>
+<h2 class="h2">업데이트</h2>
+<div class="card">
+<div class="item"><span style="flex:1">자동으로 내려받고 다음 실행 때 설치</span><button class="sw on" role="switch" aria-checked="true" aria-label="자동 업데이트"><span></span></button></div>
+<div class="item"><span style="flex:1">업데이트 채널<br><span class="dim" style="font-size:12px">베타는 새 기능을 먼저 받지만 불안정할 수 있어요</span></span>
+<div role="radiogroup" aria-label="채널" style="display:flex;gap:2px;background:#0E1014;border-radius:8px;padding:3px"><button class="btn" style="padding:5px 12px;background:#262C38" role="radio" aria-checked="true">안정</button><button class="btn" style="padding:5px 12px;background:transparent;color:#A0A8B8" role="radio" aria-checked="false">베타</button></div></div>
+<div class="item"><span style="flex:1">에이전트가 일하는 중에는 설치 미루기</span><button class="sw on" role="switch" aria-checked="true" aria-label="작업 중 설치 미루기"><span></span></button></div>
+<div class="item"><span style="flex:1">변경 기록</span><a href="#" style="font-size:13px">GitHub Releases에서 보기</a></div>
+</div>
+</section>
+
+<section>
+<h2 class="h2">오픈소스</h2>
+<div class="card">
+<div class="item"><span style="flex:1">저장소</span><a href="#" class="mono" style="font-size:13px">github.com/[아이디]/lmux</a></div>
+<div class="item"><span style="flex:1">라이선스</span><span class="muted">MIT</span></div>
+<div class="item"><span style="flex:1">사용한 오픈소스</span><a href="#" style="font-size:13px">Tauri, xterm.js 외 목록 보기</a></div>
+<div class="item"><span style="flex:1">버그 신고 · 기능 제안</span><a href="#" style="font-size:13px">GitHub Issues 열기</a></div>
+</div>
+</section>
+
+<section>
+<h2 class="h2">진단</h2>
+<div class="card">
+<div class="item"><span style="flex:1">익명 사용 통계 보내기<br><span class="dim" style="font-size:12px">기본은 꺼짐이에요. 켜도 경로, 파일, 터미널 내용은 보내지 않아요</span></span><button class="sw" role="switch" aria-checked="false" aria-label="익명 통계"><span></span></button></div>
+<div class="item"><span style="flex:1">진단 로그 내보내기<br><span class="dim" style="font-size:12px">이슈에 첨부할 수 있게 경로와 토큰을 가린 로그를 만들어요</span></span><button class="btn">내보내기</button></div>
+</div>
+</section>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

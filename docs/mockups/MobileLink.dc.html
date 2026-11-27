@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>모바일 연동</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0F1115}
+a{color:#8AB8FF}a:hover{color:#B5D2FF}
+.mono{font-family:'JetBrains Mono',monospace}
+.btn{font-family:inherit;font-size:13px;border-radius:8px;border:1px solid #2A2F3A;background:#1B1F28;color:#E6E8EE;padding:8px 13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.icon{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.card{background:#161922;border:1px solid #2A2F3A;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:14px}
+.muted{color:#9AA3B2}
+.ok{color:#6FD3A8}
+.sw{width:36px;height:20px;border-radius:999px;border:0;padding:3px;display:inline-flex;cursor:pointer}
+.sw>span{width:14px;height:14px;border-radius:50%;background:#fff}
+.line{display:flex;align-items:center;gap:10px;font-size:13px}
+</style>
+</helmet>
+<div style="width:100%;min-height:900px;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;color:#E6E8EE;background:#0F1115;padding:32px 40px;display:flex;flex-direction:column;gap:24px">
+<div>
+<h1 style="margin:0;font-size:22px;font-weight:700">모바일 연동</h1>
+<p style="margin:4px 0 0;font-size:13px" class="muted">앱은 인터넷에 열리지 않아요. Tailscale 사설망 안에서, 페어링한 기기만 접속할 수 있어요.</p>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(400px,1fr));gap:16px">
+
+<section class="card">
+<h2 style="margin:0;font-size:15px;font-weight:700">연결 상태</h2>
+<div class="line"><span class="ok">●</span><span style="flex:1">Tailscale 실행 중</span><span class="mono muted" style="font-size:12px">donghee-pc · 100.84.12.7</span></div>
+<div class="line"><span class="ok">●</span><span style="flex:1">원격 서버 켜짐 (사설망에서만 수신)</span><span class="mono muted" style="font-size:12px">:7420</span></div>
+<div class="line"><span class="ok">●</span><span style="flex:1">HTTPS 인증서</span><span class="mono muted" style="font-size:12px">donghee-pc.tail3a9f.ts.net</span></div>
+<div class="line"><span class="ok">●</span><span style="flex:1">에이전트 작업 중 절전 모드 막기</span><button class="sw" style="background:#2B5CD6;justify-content:flex-end" role="switch" aria-checked="true" aria-label="절전 막기"><span></span></button></div>
+<div style="border-top:1px solid #222631;padding-top:14px;display:flex;align-items:center;gap:10px">
+<span style="flex:1;font-size:13px">원격 접속 전체</span>
+<button class="btn" style="color:#FF8A93;border-color:#4A2328">지금 끊고 끄기</button>
+</div>
+</section>
+
+<section class="card" style="flex-direction:row;flex-wrap:wrap;align-items:center;gap:20px">
+<div style="width:168px;height:168px;background:#fff;border-radius:12px;padding:12px;box-sizing:border-box;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px" role="img" aria-label="페어링 QR 코드">
+<div style="background:#111;border-radius:2px"></div><div style="background:#111;border-radius:2px"></div><div style="background:#111;border-radius:2px"></div><div></div><div style="background:#111;border-radius:2px"></div><div></div><div style="background:#111;border-radius:2px"></div>
+<div style="background:#111;border-radius:2px"></div><div></div><div style="background:#111;border-radius:2px"></div><div style="background:#111;border-radius:2px"></div><div></div><div style="background:#111;border-radius:2px"></div><div style="background:#111;border-radius:2px"></div>
+<div style="background:#111;border-radius:2px"></div><div style="background:#111;border-radius:2px"></div><div></div><div style="background:#111;border-radius:2px"></div><div></div><div style="background:#111;border-radius:2px"></div><div></div>
+<div></div><div style="background:#111;border-radius:2px"></div><div style="background:#111;border-radius:2px"></div><div></div><div style="background:#111;border-radius:2px"></div><div style="background:#111;border-radius:2px"></div><div style="background:#111;border-radius:2px"></div>
+<div style="background:#111;border-radius:2px"></div><div></div><div style="background:#111;border-radius:2px"></div><div style="background:#111;border-radius:2px"></div><div style="background:#111;border-radius:2px"></div><div></div><div style="background:#111;border-radius:2px"></div>
+<div style="background:#111;border-radius:2px"></div><div style="background:#111;border-radius:2px"></div><div></div><div></div><div style="background:#111;border-radius:2px"></div><div style="background:#111;border-radius:2px"></div><div></div>
+<div style="background:#111;border-radius:2px"></div><div></div><div style="background:#111;border-radius:2px"></div><div style="background:#111;border-radius:2px"></div><div></div><div style="background:#111;border-radius:2px"></div><div style="background:#111;border-radius:2px"></div>
+</div>
+<div style="flex:1;min-width:200px;display:flex;flex-direction:column;gap:10px">
+<h2 style="margin:0;font-size:15px;font-weight:700">새 기기 페어링</h2>
+<ol style="margin:0;padding-left:18px;font-size:13px;line-height:22px" class="muted">
+<li>폰에 Tailscale을 설치하고 같은 계정으로 로그인</li>
+<li>폰 카메라로 QR 스캔</li>
+<li>폰에 뜬 6자리 숫자를 여기서 확인하고 승인</li>
+</ol>
+<div class="mono" style="font-size:12px;color:#F7BE5C">QR 유효 시간 4:32 · 한 번만 사용 가능</div>
+</div>
+</section>
+
+<section class="card">
+<h2 style="margin:0;font-size:15px;font-weight:700">등록된 기기</h2>
+<div class="line" style="padding:10px;background:#1B1F28;border-radius:8px">
+<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2"></rect><path d="M11 18h2"></path></svg>
+<div style="flex:1"><div>Galaxy S25 <span class="ok" style="font-size:12px">· 지금 접속 중</span></div><div class="muted" style="font-size:12px">11월 20일 등록 · 입력 허용</div></div>
+<button class="btn" style="font-size:12px;padding:6px 10px">권한</button>
+<button class="btn" style="font-size:12px;padding:6px 10px;color:#FF8A93;border-color:#4A2328">해제</button>
+</div>
+<div class="line" style="padding:10px;background:#1B1F28;border-radius:8px">
+<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"></rect><path d="M11 17h2"></path></svg>
+<div style="flex:1"><div>iPad</div><div class="muted" style="font-size:12px">11월 22일 등록 · 보기 전용 · 3일 전 접속</div></div>
+<button class="btn" style="font-size:12px;padding:6px 10px">권한</button>
+<button class="btn" style="font-size:12px;padding:6px 10px;color:#FF8A93;border-color:#4A2328">해제</button>
+</div>
+</section>
+
+<section class="card">
+<h2 style="margin:0;font-size:15px;font-weight:700">보안 규칙</h2>
+<div class="line"><span style="flex:1">파일 탐색은 등록한 프로젝트 폴더 안에서만</span><span class="ok" style="font-size:12px">항상 적용</span></div>
+<div class="line"><span style="flex:1">파일은 읽기 전용</span><span class="ok" style="font-size:12px">항상 적용</span></div>
+<div class="line"><span style="flex:1">폰에서는 열린 에이전트 세션에만 입력 (새 셸 금지)</span><span class="ok" style="font-size:12px">항상 적용</span></div>
+<div class="line"><span style="flex:1">.env · 키 파일은 폰에서 숨기기</span><button class="sw" style="background:#2B5CD6;justify-content:flex-end" role="switch" aria-checked="true" aria-label="민감 파일 숨기기"><span></span></button></div>
+<div class="line"><span style="flex:1">권한 승인(예/아니요)도 폰에서 허용</span><button class="sw" style="background:#3A4152" role="switch" aria-checked="false" aria-label="폰에서 권한 승인"><span></span></button></div>
+</section>
+
+<section class="card" style="grid-column:1/-1">
+<div style="display:flex;align-items:center"><h2 style="margin:0;font-size:15px;font-weight:700;flex:1">접속 기록</h2><button class="btn" style="font-size:12px;padding:6px 10px">전체 보기</button></div>
+<div style="overflow-x:auto">
+<table style="width:100%;border-collapse:collapse;font-size:12.5px">
+<thead><tr style="color:#9AA3B2;text-align:left"><th style="padding:6px 8px;font-weight:500">시간</th><th style="padding:6px 8px;font-weight:500">기기</th><th style="padding:6px 8px;font-weight:500">동작</th><th style="padding:6px 8px;font-weight:500">대상</th></tr></thead>
+<tbody>
+<tr style="border-top:1px solid #222631"><td style="padding:8px" class="mono">14:51</td><td style="padding:8px">Galaxy S25</td><td style="padding:8px">입력 보냄</td><td style="padding:8px" class="mono">feat/login-api</td></tr>
+<tr style="border-top:1px solid #222631"><td style="padding:8px" class="mono">14:49</td><td style="padding:8px">Galaxy S25</td><td style="padding:8px">파일 열람</td><td style="padding:8px" class="mono">SecurityConfig.java</td></tr>
+<tr style="border-top:1px solid #222631"><td style="padding:8px" class="mono">14:47</td><td style="padding:8px">Galaxy S25</td><td style="padding:8px">접속</td><td style="padding:8px" class="mono">—</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

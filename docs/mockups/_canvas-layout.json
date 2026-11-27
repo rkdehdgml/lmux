@@ -1,0 +1,32 @@
+{"v":3,"createdOnFiles":{"v":1,"at":"2026-11-26T09:30:00Z"},"title":"에이전트 멀티플렉서 화면 설계","launch":{"view":"canvas"},"pages":[],
+"boards":{
+"Main.dc.html":{"x":0,"y":0,"w":1440,"h":900,"title":"D1 · 메인 워크스페이스 (4분할)","expand":"fill"},
+"NewProject.dc.html":{"x":1520,"y":0,"w":1440,"h":900,"title":"D2 · 프로젝트 추가 (SVN · Git · 폴더 자동 감지)","expand":"fill"},
+"NewSession.dc.html":{"x":3040,"y":0,"w":1440,"h":900,"title":"D3 · 새 세션 (프로젝트 폴더 기본, 워크트리 선택)","expand":"fill"},
+"Merge.dc.html":{"x":4560,"y":0,"w":1440,"h":900,"title":"D4 · 변경 사항 · SVN 커밋 (Git은 워크트리 합치기)","expand":"fill"},
+"Accounts.dc.html":{"x":0,"y":1020,"w":1440,"h":900,"title":"D5 · 계정 · 사용량","expand":"fill"},
+"MobileLink.dc.html":{"x":1520,"y":1020,"w":1440,"h":900,"title":"D6 · 모바일 연동 (Tailscale)","expand":"fill"},
+"MPair.dc.html":{"x":0,"y":2400,"w":390,"h":844,"title":"M1 · 페어링"},
+"MSessions.dc.html":{"x":470,"y":2400,"w":390,"h":844,"title":"M2 · 세션 목록"},
+"MTerminal.dc.html":{"x":940,"y":2400,"w":390,"h":844,"title":"M3 · 원격 터미널"},
+"MFiles.dc.html":{"x":1410,"y":2400,"w":390,"h":844,"title":"M4 · 파일 탐색"},
+"MFileView.dc.html":{"x":1880,"y":2400,"w":390,"h":844,"title":"M5 · 파일 보기"},
+"MAlerts.dc.html":{"x":2350,"y":2400,"w":390,"h":844,"title":"M6 · 알림"},
+"Layout1.dc.html":{"x":0,"y":3600,"w":1440,"h":900,"title":"L1 · 패널 1개 (집중 모드)","expand":"fill"},
+"Layout2.dc.html":{"x":1520,"y":3600,"w":1440,"h":900,"title":"L2 · 패널 2개 (경계선 끌어 크기 조절)","expand":"fill"},
+"Layout3.dc.html":{"x":3040,"y":3600,"w":1440,"h":900,"title":"L3 · 패널 3개 (1+2, 끌어다 놓아 분할)","expand":"fill"},
+"Settings.dc.html":{"x":0,"y":4840,"w":1440,"h":900,"title":"S1 · 설정 · 셸 프로필","expand":"fill"},
+"SetNotify.dc.html":{"x":1520,"y":4840,"w":1440,"h":900,"title":"S2 · 설정 · 알림","expand":"fill"},
+"SetLook.dc.html":{"x":3040,"y":4840,"w":1440,"h":900,"title":"S3 · 설정 · 화면","expand":"fill"},
+"SetPerf.dc.html":{"x":4560,"y":4840,"w":1440,"h":900,"title":"S4 · 설정 · 성능","expand":"fill"},
+"SetKeys.dc.html":{"x":6080,"y":4840,"w":1440,"h":900,"title":"S5 · 설정 · 단축키","expand":"fill"},
+"SetAbout.dc.html":{"x":7600,"y":4840,"w":1440,"h":900,"title":"S6 · 설정 · 정보 · 업데이트","expand":"fill"}
+},
+"order":["Main.dc.html","NewProject.dc.html","NewSession.dc.html","Merge.dc.html","Accounts.dc.html","MobileLink.dc.html","MPair.dc.html","MSessions.dc.html","MTerminal.dc.html","MFiles.dc.html","MFileView.dc.html","MAlerts.dc.html","Layout1.dc.html","Layout2.dc.html","Layout3.dc.html","Settings.dc.html","SetNotify.dc.html","SetLook.dc.html","SetPerf.dc.html","SetKeys.dc.html","SetAbout.dc.html"],
+"notes":{
+"desk":{"x":0,"y":-260,"text":"데스크톱 앱 (Windows · Tauri)","kind":"title1","maxW":6000},
+"mob":{"x":0,"y":2140,"text":"모바일 (PWA · Tailscale 사설망)","kind":"title1","maxW":2740},
+"lay":{"x":0,"y":3340,"text":"화면 분할 · 패널 1개 / 2개 / 3개","kind":"title1","maxW":4480},
+"set":{"x":0,"y":4580,"text":"설정","kind":"title1","maxW":9040}
+},
+"designSystems":[]}

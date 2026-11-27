@@ -1,0 +1,19 @@
+node_modules/
+dist/
+src-tauri/target/
+src-tauri/gen/
+backups/
+
+# 비밀 정보
+.env
+.env.*
+*.pem
+*.key
+*.crt
+*.pfx
+
+# 로컬 도구
+.claude/
+*.log
+.DS_Store
+Thumbs.db

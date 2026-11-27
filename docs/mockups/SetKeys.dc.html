@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>설정 · 단축키</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0E1014}
+a{color:#8DBAFF}a:hover{color:#B8D4FF}
+.mono{font-family:'JetBrains Mono',monospace}
+.muted{color:#A0A8B8}.dim{color:#8A93A5}
+.btn{font-family:inherit;font-size:13px;border-radius:8px;border:0;background:#1F242E;color:#E8EAF0;padding:8px 13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.nav{display:block;padding:9px 12px;border-radius:8px;font-size:13.5px;color:#C7CCD6;text-decoration:none}
+.card{background:#14171D;border-radius:12px;padding:4px 20px}
+.row{display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid #1F242D;font-size:13.5px}
+.row:first-child{border-top:0}
+.k{font-family:'JetBrains Mono',monospace;font-size:12px;background:#1F242E;border-radius:6px;padding:3px 8px;box-shadow:inset 0 -1px 0 #0E1014}
+.h2{margin:0 0 8px;font-size:14px;font-weight:600;color:#C7CCD6}
+.ed{font-family:inherit;font-size:12px;border:0;background:transparent;color:#8DBAFF;cursor:pointer;padding:4px 6px}
+</style>
+</helmet>
+<div style="width:100%;min-height:900px;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;color:#E8EAF0;background:#0E1014;display:flex;flex-wrap:wrap;gap:10px;padding:10px">
+<nav aria-label="설정 메뉴" style="flex:1 1 220px;max-width:240px;background:#14171D;border-radius:12px;padding:20px 10px;display:flex;flex-direction:column;gap:2px">
+<div style="font-size:18px;font-weight:700;padding:0 12px 14px">설정</div>
+<a class="nav" href="Settings.dc.html">셸 프로필</a>
+<a class="nav" href="SetNotify.dc.html">알림</a>
+<a class="nav" href="SetLook.dc.html">화면</a>
+<a class="nav" href="SetPerf.dc.html">성능</a>
+<a class="nav" href="SetKeys.dc.html" style="background:#1E2330;color:#E8EAF0" aria-current="page">단축키</a>
+<a class="nav" href="SetAbout.dc.html">정보 · 업데이트</a>
+</nav>
+<div style="flex:999 1 560px;min-width:0;padding:18px 28px;display:flex;flex-direction:column;gap:20px;max-width:920px">
+<div style="display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap">
+<div style="flex:1;min-width:240px"><h1 style="margin:0;font-size:22px;font-weight:700">단축키</h1><p class="muted" style="margin:4px 0 0;font-size:13px">터미널 안에서는 Ctrl+C 같은 셸 단축키가 먼저예요. 겹치면 표시해 드려요.</p></div>
+<button class="btn">기본값으로</button>
+</div>
+<label for="sk-q" style="position:absolute;width:1px;height:1px;overflow:hidden">단축키 검색</label>
+<input id="sk-q" placeholder="동작이나 키로 찾기 (예: 분할, Ctrl+K)" style="font-family:inherit;font-size:13.5px;background:#14171D;border:0;border-radius:10px;color:#E8EAF0;padding:12px 14px">
+
+<section>
+<h2 class="h2">세션</h2>
+<div class="card">
+<div class="row"><span style="flex:1">새 세션</span><span class="k">Ctrl+N</span><button class="ed">변경</button></div>
+<div class="row"><span style="flex:1">세션 닫기</span><span class="k">Ctrl+W</span><button class="ed">변경</button></div>
+<div class="row"><span style="flex:1">다음 · 이전 세션</span><span class="k">Ctrl+Tab</span><span class="k">Ctrl+Shift+Tab</span><button class="ed">변경</button></div>
+<div class="row"><span style="flex:1">입력 기다리는 세션으로 바로 가기</span><span class="k">Ctrl+J</span><button class="ed">변경</button></div>
+</div>
+</section>
+
+<section>
+<h2 class="h2">화면 분할</h2>
+<div class="card">
+<div class="row"><span style="flex:1">오른쪽으로 분할</span><span class="k">Ctrl+\</span><button class="ed">변경</button></div>
+<div class="row"><span style="flex:1">아래로 분할</span><span class="k">Ctrl+Shift+\</span><button class="ed">변경</button></div>
+<div class="row"><span style="flex:1">패널로 이동</span><span class="k">Ctrl+1 ~ 4</span><button class="ed">변경</button></div>
+<div class="row"><span style="flex:1">지금 패널 크게 보기 · 되돌리기</span><span class="k">Ctrl+Shift+Enter</span><button class="ed">변경</button></div>
+<div class="row"><span style="flex:1">패널 크기 똑같이 맞추기</span><span class="k">Ctrl+Shift+=</span><button class="ed">변경</button></div>
+</div>
+</section>
+
+<section>
+<h2 class="h2">에이전트</h2>
+<div class="card">
+<div class="row"><span style="flex:1">승인 · 세션 동안 허용 · 거절</span><span class="k">Alt+1</span><span class="k">Alt+2</span><span class="k">Alt+3</span><button class="ed">변경</button></div>
+<div class="row"><span style="flex:1">/compact 보내기</span><span class="k">Ctrl+Shift+K</span><button class="ed">변경</button></div>
+<div class="row"><span style="flex:1">변경 사항 · 커밋 열기</span><span class="k">Ctrl+Shift+G</span><button class="ed">변경</button></div>
+</div>
+</section>
+
+<section>
+<h2 class="h2">앱</h2>
+<div class="card">
+<div class="row"><span style="flex:1">검색 · 명령</span><span class="k">Ctrl+K</span><button class="ed">변경</button></div>
+<div class="row"><span style="flex:1">설정</span><span class="k">Ctrl+,</span><button class="ed">변경</button></div>
+<div class="row" style="background:#221B0E;margin:0 -20px;padding:11px 20px;border-radius:0 0 12px 12px"><span style="flex:1">사이드바 숨기기 · 보이기<br><span style="font-size:12px;color:#EBC277">Claude Code의 Ctrl+B와 겹쳐요. 터미널에 포커스가 있으면 터미널로 보내요</span></span><span class="k">Ctrl+B</span><button class="ed">변경</button></div>
+</div>
+</section>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

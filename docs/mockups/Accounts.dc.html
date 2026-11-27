@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>계정과 사용량</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0F1115}
+a{color:#8AB8FF}a:hover{color:#B5D2FF}
+.mono{font-family:'JetBrains Mono',monospace}
+.btn{font-family:inherit;font-size:13px;border-radius:8px;border:1px solid #2A2F3A;background:#1B1F28;color:#E6E8EE;padding:8px 13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.icon{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.bar{height:8px;border-radius:4px;background:#262B36;overflow:hidden}
+.bar>span{display:block;height:100%;border-radius:4px}
+.card{background:#161922;border:1px solid #2A2F3A;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:16px}
+.row{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;margin-bottom:6px}
+.muted{color:#9AA3B2}
+</style>
+</helmet>
+<div style="width:100%;min-height:900px;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;color:#E6E8EE;background:#0F1115;padding:32px 40px;display:flex;flex-direction:column;gap:24px">
+<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+<div style="flex:1;min-width:260px">
+<h1 style="margin:0;font-size:22px;font-weight:700">계정 · 사용량</h1>
+<p style="margin:4px 0 0;font-size:13px" class="muted">각 CLI가 남긴 로컬 로그로 계산해요. 계정은 설정 폴더 단위로 등록돼요.</p>
+</div>
+<span class="mono muted" style="font-size:12px">마지막 갱신 14:52:08 · 22초 후 갱신</span>
+<button class="btn" aria-label="지금 갱신"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"></path><path d="M20 4v7h-7"></path></svg>지금 갱신</button>
+<button class="btn" style="background:#2B5CD6;border-color:#2B5CD6;color:#fff"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>계정 추가</button>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:16px">
+
+<section class="card">
+<div style="display:flex;align-items:center;gap:10px">
+<div style="width:36px;height:36px;border-radius:10px;background:#1E2A44;display:flex;align-items:center;justify-content:center;font-weight:700;color:#8AB8FF">업</div>
+<div style="flex:1"><h2 style="margin:0;font-size:15px;font-weight:700">업무 계정</h2><div style="font-size:12px" class="muted">Claude Code · Max 요금제</div></div>
+<span style="font-size:12px;color:#8AB8FF;background:#16233F;border-radius:999px;padding:3px 9px">세션 3개 사용 중</span>
+</div>
+<div class="mono muted" style="font-size:12px;background:#0F1115;border:1px solid #222631;border-radius:8px;padding:8px 10px">WSL · ~/.claude<br>Windows · C:\Users\donghee\.claude</div>
+<div>
+<div class="row"><span>5시간 한도</span><span class="mono">62% · 1시간 48분 후 초기화</span></div>
+<div class="bar"><span style="width:62%;background:#5B9DFF"></span></div>
+</div>
+<div>
+<div class="row"><span>주간 한도</span><span class="mono">41% · 월요일 09:00 초기화</span></div>
+<div class="bar"><span style="width:41%;background:#5B9DFF"></span></div>
+</div>
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;font-size:12px">
+<div style="background:#1B1F28;border-radius:8px;padding:10px"><div class="muted">오늘 입력</div><div class="mono" style="font-size:15px;margin-top:2px">1.8M</div></div>
+<div style="background:#1B1F28;border-radius:8px;padding:10px"><div class="muted">오늘 출력</div><div class="mono" style="font-size:15px;margin-top:2px">212K</div></div>
+<div style="background:#1B1F28;border-radius:8px;padding:10px"><div class="muted">캐시 읽기</div><div class="mono" style="font-size:15px;margin-top:2px">9.4M</div></div>
+</div>
+<div style="font-size:12px;display:flex;flex-direction:column;gap:6px">
+<div class="muted">이 계정을 쓰는 세션</div>
+<div style="display:flex;justify-content:space-between"><span>feat/login-api</span><span class="mono muted">컨텍스트 34%</span></div>
+<div style="display:flex;justify-content:space-between"><span>fix/upload-size</span><span class="mono" style="color:#F7BE5C">컨텍스트 81%</span></div>
+<div style="display:flex;justify-content:space-between"><span>docs/readme</span><span class="mono muted">컨텍스트 22%</span></div>
+</div>
+</section>
+
+<section class="card">
+<div style="display:flex;align-items:center;gap:10px">
+<div style="width:36px;height:36px;border-radius:10px;background:#1E2E28;display:flex;align-items:center;justify-content:center;font-weight:700;color:#6FD3A8">개</div>
+<div style="flex:1"><h2 style="margin:0;font-size:15px;font-weight:700">개인 계정</h2><div style="font-size:12px" class="muted">Claude Code · Pro 요금제</div></div>
+<span style="font-size:12px;color:#9AA3B2;background:#1F2430;border-radius:999px;padding:3px 9px">사용 중인 세션 없음</span>
+</div>
+<div class="mono muted" style="font-size:12px;background:#0F1115;border:1px solid #222631;border-radius:8px;padding:8px 10px">WSL · ~/.claude-personal</div>
+<div>
+<div class="row"><span>5시간 한도</span><span class="mono">18% · 3시간 10분 후 초기화</span></div>
+<div class="bar"><span style="width:18%;background:#5B9DFF"></span></div>
+</div>
+<div>
+<div class="row"><span>주간 한도</span><span class="mono">9% · 월요일 09:00 초기화</span></div>
+<div class="bar"><span style="width:9%;background:#5B9DFF"></span></div>
+</div>
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;font-size:12px">
+<div style="background:#1B1F28;border-radius:8px;padding:10px"><div class="muted">오늘 입력</div><div class="mono" style="font-size:15px;margin-top:2px">310K</div></div>
+<div style="background:#1B1F28;border-radius:8px;padding:10px"><div class="muted">오늘 출력</div><div class="mono" style="font-size:15px;margin-top:2px">41K</div></div>
+<div style="background:#1B1F28;border-radius:8px;padding:10px"><div class="muted">캐시 읽기</div><div class="mono" style="font-size:15px;margin-top:2px">1.2M</div></div>
+</div>
+<div style="font-size:12px;display:flex;gap:8px">
+<button class="btn" style="font-size:12px;padding:6px 10px">이 계정으로 새 작업</button>
+<button class="btn" style="font-size:12px;padding:6px 10px">편집</button>
+</div>
+</section>
+
+<section class="card" style="border-style:dashed;align-items:flex-start">
+<div style="display:flex;align-items:center;gap:10px">
+<div style="width:36px;height:36px;border-radius:10px;background:#1F2430;display:flex;align-items:center;justify-content:center;font-weight:700;color:#9AA3B2">C</div>
+<div><h2 style="margin:0;font-size:15px;font-weight:700">Codex 계정</h2><div style="font-size:12px" class="muted">WSL · ~/.codex</div></div>
+</div>
+<p style="margin:0;font-size:13px" class="muted">토큰 사용량만 표시돼요. 한도 비율과 컨텍스트 표시는 다음 버전에서 지원 예정이에요.</p>
+<div style="width:100%"><div class="row"><span>오늘 토큰</span><span class="mono">640K</span></div></div>
+</section>
+
+</div>
+
+<div style="display:flex;align-items:center;gap:10px;font-size:12px;flex-wrap:wrap" class="muted">
+<span>갱신 주기</span>
+<select class="btn" style="padding:5px 8px;font-size:12px" aria-label="갱신 주기"><option>30초</option><option>1분</option><option>5분</option></select>
+<span>· 한도 80%를 넘으면 알림</span>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

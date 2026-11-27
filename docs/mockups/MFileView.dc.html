@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>모바일 파일 보기</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0F1115}
+a{color:#8AB8FF}a:hover{color:#B5D2FF}
+.mono{font-family:'JetBrains Mono',monospace}
+.muted{color:#9AA3B2}
+.icon{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ln{display:flex;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:21px;white-space:pre}
+.ln>i{font-style:normal;width:38px;flex:none;text-align:right;padding-right:12px;color:#8A93A3}
+.k{color:#8AB8FF}.v{color:#E6C07B}
+</style>
+</helmet>
+<div style="width:390px;height:844px;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;color:#E6E8EE;background:#0F1115;display:flex;flex-direction:column">
+<header style="display:flex;align-items:center;gap:6px;padding:14px 12px;border-bottom:1px solid #222631;background:#13161C">
+<a href="MFiles.dc.html" aria-label="파일 목록으로" style="display:flex;align-items:center;justify-content:center;width:44px;height:44px;color:#E6E8EE"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg></a>
+<div style="flex:1;min-width:0">
+<div style="font-size:15px;font-weight:500">application.yml</div>
+<div class="mono muted" style="font-size:11px">src/main/resources · 38줄 · 읽기 전용</div>
+</div>
+</header>
+<div role="tablist" aria-label="보기 방식" style="display:flex;gap:6px;padding:10px 12px;border-bottom:1px solid #222631">
+<button role="tab" aria-selected="false" style="font-family:inherit;font-size:13px;min-height:36px;padding:0 14px;border-radius:999px;border:1px solid #2A2F3A;background:transparent;color:#C9CED8">전체 내용</button>
+<button role="tab" aria-selected="true" style="font-family:inherit;font-size:13px;min-height:36px;padding:0 14px;border-radius:999px;border:1px solid #2B5CD6;background:#172036;color:#E6E8EE">바뀐 부분 <span class="mono" style="color:#6FD3A8">+1</span> <span class="mono" style="color:#FF8A93">−1</span></button>
+</div>
+<div style="flex:1;overflow:auto;padding:10px 0;background:#0B0D11">
+<div class="ln"><i>12</i><span class="k">spring</span>:</div>
+<div class="ln"><i>13</i>  <span class="k">servlet</span>:</div>
+<div class="ln"><i>14</i>    <span class="k">multipart</span>:</div>
+<div class="ln"><i>15</i>      <span class="k">enabled</span>: <span class="v">true</span></div>
+<div class="ln" style="background:#3A1A1E"><i style="color:#FF8A93">−</i><span style="color:#FF8A93">      max-file-size: 10MB</span></div>
+<div class="ln" style="background:#123024"><i style="color:#6FD3A8">16</i><span style="color:#6FD3A8">      max-file-size: 50MB</span></div>
+<div class="ln"><i>17</i>      <span class="k">max-request-size</span>: <span class="v">50MB</span></div>
+<div class="ln"><i>18</i></div>
+<div class="ln"><i>19</i>  <span class="k">datasource</span>:</div>
+<div class="ln"><i>20</i>    <span class="k">driver-class-name</span>: <span class="v">oracle.jdbc.OracleDriver</span></div>
+<div class="ln"><i>21</i>    <span class="k">url</span>: <span class="v">${DB_URL}</span></div>
+<div class="ln"><i>22</i></div>
+<div class="ln"><i>23</i><span class="k">mybatis</span>:</div>
+<div class="ln"><i>24</i>  <span class="k">mapper-locations</span>: <span class="v">classpath:mapper/**/*.xml</span></div>
+</div>
+<div style="padding:10px 12px 18px;border-top:1px solid #222631;background:#13161C;display:flex;gap:8px">
+<a href="MTerminal.dc.html" style="flex:1;display:flex;align-items:center;justify-content:center;min-height:48px;border-radius:12px;background:#1B1F28;border:1px solid #2A2F3A;color:#E6E8EE;text-decoration:none;font-size:14px">이 파일에 대해 에이전트에게 묻기</a>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>모바일 원격 터미널</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0E1014}
+a{color:#8DBAFF}a:hover{color:#B8D4FF}
+.mono{font-family:'JetBrains Mono',monospace}
+.muted{color:#A0A8B8}
+.dim{color:#8A93A5}
+.icon{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.key{font-family:'JetBrains Mono',monospace;font-size:13px;min-width:44px;min-height:40px;border-radius:9px;border:0;background:#1F242E;color:#E8EAF0;cursor:pointer;padding:0 10px}
+.big{font-family:inherit;font-size:15px;min-height:48px;border-radius:12px;border:0;background:#262C38;color:#E8EAF0;cursor:pointer;flex:1}
+.tw{font-family:'JetBrains Mono',monospace;font-size:11.5px;line-height:18px;color:#D5D9E0;padding:10px 12px;flex:1;overflow:hidden;background:#0B0D10;display:flex;flex-direction:column;justify-content:flex-end;min-height:0}
+.ln{white-space:pre-wrap;min-height:18px}
+.tg{color:#4CC79A}.td{color:#8A93A5}.ty{color:#F2B54A}
+.tbox{border:1px solid #3A404E;border-radius:6px;padding:4px 0;margin:6px 0}
+.tperm{border:1px solid #8A6A2A;border-radius:6px;padding:8px 10px;margin:6px 0 2px}
+.tadd{background:#12301F;color:#B9EBCF}
+</style>
+</helmet>
+<div style="width:390px;height:844px;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;color:#E8EAF0;background:#0E1014;display:flex;flex-direction:column">
+<header style="display:flex;align-items:center;gap:6px;padding:12px 12px 10px;background:#14171D">
+<a href="MSessions.dc.html" aria-label="세션 목록으로" style="display:flex;align-items:center;justify-content:center;width:44px;height:44px;color:#E8EAF0"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg></a>
+<div style="flex:1;min-width:0">
+<div style="font-size:15px;font-weight:500">급식 신청 화면 수정</div>
+<div style="font-size:11.5px;margin-top:2px"><span style="color:#F2B54A">● 입력 대기</span> <span class="dim">· gov-portal · PowerShell</span></div>
+</div>
+<a href="MFiles.dc.html" aria-label="이 프로젝트 파일 보기" style="display:flex;align-items:center;justify-content:center;width:44px;height:44px;color:#E8EAF0"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg></a>
+</header>
+<div style="display:flex;align-items:center;gap:10px;padding:10px 16px 12px;background:#14171D">
+<span class="dim" style="font-size:12px">컨텍스트</span>
+<div style="flex:1;height:6px;border-radius:3px;background:#262B36;overflow:hidden"><span style="display:block;height:100%;width:84%;background:#F2B54A"></span></div>
+<span class="mono" style="font-size:12px;color:#F2B54A;font-weight:600">84%</span>
+<span class="mono dim" style="font-size:11px">168K/200K</span>
+</div>
+
+<div class="tw">
+<div class="ln"><span class="tg">⏺</span> Read(.../milk/MilkApplyController.java)</div>
+<div class="ln td">  ⎿  Read 88 lines (ctrl+r to expand)</div>
+<div class="ln"><span class="tg">⏺</span> Update(.../jsp/milk/apply.jsp)</div>
+<div class="ln td">  ⎿  Updated apply.jsp with 8 additions and 1 removal</div>
+<div class="ln"> </div>
+<div class="ln">⏺ 서버에서도 신청 기간을 확인하도록 컨트롤러를 고칠게요.</div>
+<div class="tperm">
+<div class="ln ty">Edit file</div>
+<div class="tbox">
+<div class="ln td" style="padding:0 8px">MilkApplyController.java</div>
+<div class="ln" style="padding:0 8px"><span class="td">45 </span> public ResponseEntity&lt;?&gt; apply(…) {</div>
+<div class="ln tadd" style="padding:0 8px">46 +  if (period.isClosed())</div>
+<div class="ln tadd" style="padding:0 8px">47 +    return badRequest("신청 기간이 아니에요");</div>
+</div>
+<div class="ln">Do you want to make this edit to <b style="font-weight:600">MilkApplyController.java</b>?</div>
+<div class="ln ty">❯ 1. Yes</div>
+<div class="ln">  2. Yes, and don't ask again this session</div>
+<div class="ln">  3. No, and tell Claude what to do differently</div>
+</div>
+</div>
+
+<div style="padding:12px;background:#221B0E;display:flex;flex-direction:column;gap:8px">
+<div style="font-size:12px;color:#EBC277">⚠ 결석계 세션도 이 파일을 고쳤어요</div>
+<div style="display:flex;gap:8px">
+<button class="big" style="background:#2F6FE4;color:#fff;font-weight:500">예</button>
+<button class="big">세션 동안 허용</button>
+<button class="big">아니요</button>
+</div>
+</div>
+
+<div style="padding:10px 12px 18px;background:#14171D;display:flex;flex-direction:column;gap:8px">
+<div role="toolbar" aria-label="특수 키" style="display:flex;gap:6px;overflow:hidden">
+<button class="key">Esc</button><button class="key">Tab</button><button class="key">Ctrl</button><button class="key" aria-label="위">↑</button><button class="key" aria-label="아래">↓</button><button class="key" style="font-size:12px">/compact</button>
+</div>
+<div style="display:flex;gap:8px;align-items:center">
+<label for="mt-in" style="position:absolute;width:1px;height:1px;overflow:hidden">지시 입력</label>
+<input id="mt-in" placeholder="에이전트에게 보낼 말" style="flex:1;font-family:inherit;font-size:15px;min-height:46px;box-sizing:border-box;background:#0E1014;border:1px solid #262B36;border-radius:12px;color:#E8EAF0;padding:0 14px">
+<button aria-label="보내기" style="width:46px;height:46px;border-radius:12px;border:0;background:#2F6FE4;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

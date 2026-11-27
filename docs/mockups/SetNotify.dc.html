@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>설정 · 알림</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0E1014}
+a{color:#8DBAFF}a:hover{color:#B8D4FF}
+.mono{font-family:'JetBrains Mono',monospace}
+.muted{color:#A0A8B8}.dim{color:#8A93A5}
+.btn{font-family:inherit;font-size:13px;border-radius:8px;border:0;background:#1F242E;color:#E8EAF0;padding:8px 13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn.primary{background:#2F6FE4;color:#fff;font-weight:500}
+.nav{display:block;padding:9px 12px;border-radius:8px;font-size:13.5px;color:#C7CCD6;text-decoration:none}
+.card{background:#14171D;border-radius:12px;padding:4px 20px}
+.item{display:flex;align-items:center;gap:12px;padding:14px 0;border-top:1px solid #1F242D;font-size:13.5px;flex-wrap:wrap}
+.item:first-child{border-top:0}
+.sw{width:38px;height:22px;border-radius:999px;border:0;padding:3px;display:inline-flex;cursor:pointer;background:#3A4152;flex:none}
+.sw.on{background:#2F6FE4;justify-content:flex-end}
+.sw>span{width:16px;height:16px;border-radius:50%;background:#fff}
+.input{font-family:inherit;font-size:13px;background:#0E1014;border:1px solid #262B36;border-radius:8px;color:#E8EAF0;padding:7px 10px}
+.h2{margin:0 0 8px;font-size:14px;font-weight:600;color:#C7CCD6}
+th,td{padding:12px 10px;text-align:left;font-weight:400}
+th{font-size:12px;color:#A0A8B8;font-weight:500}
+tbody tr{border-top:1px solid #1F242D}
+.c{text-align:center}
+</style>
+</helmet>
+<div style="width:100%;min-height:900px;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;color:#E8EAF0;background:#0E1014;display:flex;flex-wrap:wrap;gap:10px;padding:10px">
+<nav aria-label="설정 메뉴" style="flex:1 1 220px;max-width:240px;background:#14171D;border-radius:12px;padding:20px 10px;display:flex;flex-direction:column;gap:2px">
+<div style="font-size:18px;font-weight:700;padding:0 12px 14px">설정</div>
+<a class="nav" href="Settings.dc.html">셸 프로필</a>
+<a class="nav" href="SetNotify.dc.html" style="background:#1E2330;color:#E8EAF0" aria-current="page">알림</a>
+<a class="nav" href="SetLook.dc.html">화면</a>
+<a class="nav" href="SetPerf.dc.html">성능</a>
+<a class="nav" href="SetKeys.dc.html">단축키</a>
+<a class="nav" href="SetAbout.dc.html">정보 · 업데이트</a>
+</nav>
+<div style="flex:999 1 560px;min-width:0;padding:18px 28px;display:flex;flex-direction:column;gap:22px;max-width:920px">
+<div style="display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap">
+<div style="flex:1;min-width:240px"><h1 style="margin:0;font-size:22px;font-weight:700">알림</h1><p class="muted" style="margin:4px 0 0;font-size:13px">어떤 일이 생겼을 때 어디로 알려드릴지 정해요.</p></div>
+<button class="btn">테스트 알림 보내기</button>
+</div>
+
+<section>
+<h2 class="h2">알림 받을 일</h2>
+<div class="card" style="padding:4px 10px;overflow-x:auto">
+<table style="width:100%;border-collapse:collapse;font-size:13.5px">
+<thead><tr><th>상황</th><th class="c">PC 알림</th><th class="c">폰 알림</th><th class="c">소리</th></tr></thead>
+<tbody>
+<tr><td>에이전트가 입력이나 승인을 기다릴 때</td><td class="c"><input type="checkbox" checked style="accent-color:#6EA8FF;width:16px;height:16px" aria-label="입력 대기 PC"></td><td class="c"><input type="checkbox" checked style="accent-color:#6EA8FF;width:16px;height:16px" aria-label="입력 대기 폰"></td><td class="c"><input type="checkbox" checked style="accent-color:#6EA8FF;width:16px;height:16px" aria-label="입력 대기 소리"></td></tr>
+<tr><td>작업이 끝났을 때</td><td class="c"><input type="checkbox" checked style="accent-color:#6EA8FF;width:16px;height:16px" aria-label="완료 PC"></td><td class="c"><input type="checkbox" checked style="accent-color:#6EA8FF;width:16px;height:16px" aria-label="완료 폰"></td><td class="c"><input type="checkbox" style="accent-color:#6EA8FF;width:16px;height:16px" aria-label="완료 소리"></td></tr>
+<tr><td>오류로 멈췄을 때</td><td class="c"><input type="checkbox" checked style="accent-color:#6EA8FF;width:16px;height:16px" aria-label="오류 PC"></td><td class="c"><input type="checkbox" checked style="accent-color:#6EA8FF;width:16px;height:16px" aria-label="오류 폰"></td><td class="c"><input type="checkbox" checked style="accent-color:#6EA8FF;width:16px;height:16px" aria-label="오류 소리"></td></tr>
+<tr><td>두 세션이 같은 파일을 고쳤을 때</td><td class="c"><input type="checkbox" checked style="accent-color:#6EA8FF;width:16px;height:16px" aria-label="충돌 PC"></td><td class="c"><input type="checkbox" style="accent-color:#6EA8FF;width:16px;height:16px" aria-label="충돌 폰"></td><td class="c"><input type="checkbox" style="accent-color:#6EA8FF;width:16px;height:16px" aria-label="충돌 소리"></td></tr>
+<tr><td>컨텍스트가 <select class="input" style="padding:3px 6px" aria-label="컨텍스트 기준"><option>80%</option><option>70%</option><option>90%</option></select> 넘을 때</td><td class="c"><input type="checkbox" checked style="accent-color:#6EA8FF;width:16px;height:16px" aria-label="컨텍스트 PC"></td><td class="c"><input type="checkbox" checked style="accent-color:#6EA8FF;width:16px;height:16px" aria-label="컨텍스트 폰"></td><td class="c"><input type="checkbox" style="accent-color:#6EA8FF;width:16px;height:16px" aria-label="컨텍스트 소리"></td></tr>
+<tr><td>사용량 한도가 <select class="input" style="padding:3px 6px" aria-label="사용량 기준"><option>80%</option><option>90%</option></select> 넘을 때</td><td class="c"><input type="checkbox" checked style="accent-color:#6EA8FF;width:16px;height:16px" aria-label="사용량 PC"></td><td class="c"><input type="checkbox" checked style="accent-color:#6EA8FF;width:16px;height:16px" aria-label="사용량 폰"></td><td class="c"><input type="checkbox" style="accent-color:#6EA8FF;width:16px;height:16px" aria-label="사용량 소리"></td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section>
+<h2 class="h2">폰 알림 규칙</h2>
+<div class="card">
+<div class="item"><span style="flex:1">PC 앞에 있을 땐 폰으로 보내지 않기<br><span class="dim" style="font-size:12px">키보드·마우스 입력이 없는 시간이 기준을 넘으면 폰으로 보내요</span></span><select class="input" aria-label="자리 비움 기준"><option>5분</option><option>1분</option><option>10분</option></select><button class="sw on" role="switch" aria-checked="true" aria-label="자리 비움일 때만"><span></span></button></div>
+<div class="item"><span style="flex:1">방해 금지 시간<br><span class="dim" style="font-size:12px">이 시간엔 오류 알림만 보내요</span></span><input class="input mono" style="width:70px" value="23:00" aria-label="시작"><span class="dim">~</span><input class="input mono" style="width:70px" value="08:00" aria-label="끝"><button class="sw on" role="switch" aria-checked="true" aria-label="방해 금지"><span></span></button></div>
+<div class="item"><span style="flex:1">알림에 터미널 내용 넣기<br><span class="dim" style="font-size:12px">끄면 "입력이 필요해요"처럼 내용 없이 보내요. 푸시 서버를 거치기 때문에 기본은 꺼짐이에요.</span></span><button class="sw" role="switch" aria-checked="false" aria-label="내용 포함"><span></span></button></div>
+<div class="item"><span style="flex:1">같은 세션 알림 묶기<br><span class="dim" style="font-size:12px">1분 안에 여러 번 생기면 하나로 보내요</span></span><button class="sw on" role="switch" aria-checked="true" aria-label="알림 묶기"><span></span></button></div>
+</div>
+</section>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

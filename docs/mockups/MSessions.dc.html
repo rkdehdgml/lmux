@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>모바일 세션 목록</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0E1014}
+a{color:#8DBAFF}a:hover{color:#B8D4FF}
+.mono{font-family:'JetBrains Mono',monospace}
+.muted{color:#A0A8B8}
+.dim{color:#8A93A5}
+.icon{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.card{display:flex;align-items:center;gap:12px;padding:14px;border-radius:14px;background:#14171D;text-decoration:none;color:#E8EAF0}
+.mini{height:5px;border-radius:3px;background:#262B36;overflow:hidden}
+.mini>span{display:block;height:100%}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;color:#A0A8B8;text-decoration:none;min-height:48px;justify-content:center}
+.badge{display:inline-flex;align-items:center;font-size:10px;font-weight:600;border-radius:5px;padding:0 6px;line-height:16px}
+.grp{display:flex;align-items:center;gap:8px;padding:8px 4px 2px;font-size:12.5px;font-weight:500;color:#C7CCD6}
+</style>
+</helmet>
+<div style="width:390px;height:844px;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;color:#E8EAF0;background:#0E1014;display:flex;flex-direction:column">
+<header style="padding:24px 20px 10px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;align-items:center;gap:8px">
+<h1 style="margin:0;font-size:24px;font-weight:700;flex:1">세션</h1>
+<span style="font-size:12px;color:#4CC79A;background:#132520;border-radius:999px;padding:5px 10px">● donghee-pc</span>
+</div>
+<div style="display:flex;gap:8px;font-size:12px">
+<div style="flex:1;background:#14171D;border-radius:11px;padding:9px 11px"><div class="muted">업무 · 5시간</div><div style="display:flex;align-items:center;gap:6px;margin-top:5px"><div class="mini" style="flex:1"><span style="width:62%;background:#6EA8FF"></span></div><span class="mono">62%</span></div></div>
+<div style="flex:1;background:#14171D;border-radius:11px;padding:9px 11px"><div class="muted">개인 · 5시간</div><div style="display:flex;align-items:center;gap:6px;margin-top:5px"><div class="mini" style="flex:1"><span style="width:18%;background:#6EA8FF"></span></div><span class="mono">18%</span></div></div>
+</div>
+</header>
+
+<div style="flex:1;overflow:hidden;padding:0 16px 12px;display:flex;flex-direction:column;gap:8px">
+<div class="grp">gov-portal <span class="badge" style="background:#2A2140;color:#C3A8FF">SVN</span></div>
+
+<a class="card" href="MTerminal.dc.html" style="background:#221B0E;box-shadow:inset 0 0 0 1px #5C4515">
+<span style="flex:1;min-width:0">
+<span style="display:block;font-size:15px;font-weight:500">급식 신청 화면 수정</span>
+<span style="display:block;font-size:12.5px;color:#EBC277;margin-top:3px">파일 수정 승인이 필요해요</span>
+<span class="dim" style="display:block;font-size:11px;margin-top:4px">PowerShell · 1분 전</span>
+</span>
+<span role="img" aria-label="컨텍스트 84%" style="display:flex;flex-direction:column;align-items:center;gap:2px">
+<svg viewBox="0 0 24 24" style="width:40px;height:40px" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="#3A3018" stroke-width="2.6"></circle><circle cx="12" cy="12" r="9" fill="none" stroke="#F2B54A" stroke-width="2.6" stroke-dasharray="47.5 56.5" stroke-linecap="round" transform="rotate(-90 12 12)"></circle><text x="12" y="13.6" text-anchor="middle" font-size="5.6" font-family="JetBrains Mono" fill="#F2B54A" font-weight="600">84</text></svg>
+<span class="mono" style="font-size:10px;color:#E9B85E">168K</span>
+</span>
+</a>
+
+<a class="card" href="MTerminal.dc.html">
+<span style="flex:1;min-width:0">
+<span style="display:block;font-size:15px;font-weight:500">결석계 API 추가</span>
+<span style="display:block;font-size:12.5px;color:#8DBAFF;margin-top:3px">작업 중 · API 작성 중…</span>
+<span class="dim" style="display:block;font-size:11px;margin-top:4px">WSL · 방금</span>
+</span>
+<span role="img" aria-label="컨텍스트 46%" style="display:flex;flex-direction:column;align-items:center;gap:2px">
+<svg viewBox="0 0 24 24" style="width:40px;height:40px" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="#262B36" stroke-width="2.6"></circle><circle cx="12" cy="12" r="9" fill="none" stroke="#6EA8FF" stroke-width="2.6" stroke-dasharray="26 56.5" stroke-linecap="round" transform="rotate(-90 12 12)"></circle><text x="12" y="13.6" text-anchor="middle" font-size="5.6" font-family="JetBrains Mono" fill="#E8EAF0" font-weight="600">46</text></svg>
+<span class="mono dim" style="font-size:10px">92K</span>
+</span>
+</a>
+
+<div class="grp">portfolio-cms <span class="badge" style="background:#1B2B22;color:#7FD8AE">Git</span></div>
+<a class="card" href="MTerminal.dc.html">
+<span style="flex:1;min-width:0">
+<span style="display:block;font-size:15px;font-weight:500">로그인 JWT 인증</span>
+<span style="display:block;font-size:12.5px;color:#8DBAFF;margin-top:3px">작업 중 · 테스트 통과</span>
+<span class="dim" style="display:block;font-size:11px;margin-top:4px">워크트리 feat/login · 20초 전</span>
+</span>
+<span role="img" aria-label="컨텍스트 33%" style="display:flex;flex-direction:column;align-items:center;gap:2px">
+<svg viewBox="0 0 24 24" style="width:40px;height:40px" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="#262B36" stroke-width="2.6"></circle><circle cx="12" cy="12" r="9" fill="none" stroke="#6EA8FF" stroke-width="2.6" stroke-dasharray="18.6 56.5" stroke-linecap="round" transform="rotate(-90 12 12)"></circle><text x="12" y="13.6" text-anchor="middle" font-size="5.6" font-family="JetBrains Mono" fill="#E8EAF0" font-weight="600">33</text></svg>
+<span class="mono dim" style="font-size:10px">66K</span>
+</span>
+</a>
+
+<div class="grp">batch-scripts <span class="badge" style="background:#232833;color:#A0A8B8">폴더</span></div>
+<a class="card" href="MTerminal.dc.html">
+<span style="flex:1;min-width:0">
+<span style="display:block;font-size:15px;font-weight:500">로그 정리 스크립트</span>
+<span style="display:block;font-size:12.5px;color:#4CC79A;margin-top:3px">✓ 완료</span>
+</span>
+<span role="img" aria-label="컨텍스트 12%" style="display:flex;flex-direction:column;align-items:center;gap:2px">
+<svg viewBox="0 0 24 24" style="width:40px;height:40px" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="#262B36" stroke-width="2.6"></circle><circle cx="12" cy="12" r="9" fill="none" stroke="#6EA8FF" stroke-width="2.6" stroke-dasharray="6.8 56.5" stroke-linecap="round" transform="rotate(-90 12 12)"></circle><text x="12" y="13.6" text-anchor="middle" font-size="5.6" font-family="JetBrains Mono" fill="#E8EAF0" font-weight="600">12</text></svg>
+<span class="mono dim" style="font-size:10px">24K</span>
+</span>
+</a>
+</div>
+
+<nav aria-label="하단 메뉴" style="display:flex;background:#14171D;padding:4px 8px 16px">
+<a class="tab" href="MSessions.dc.html" style="color:#8DBAFF" aria-current="page"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="2"></rect><rect x="13" y="3" width="8" height="8" rx="2"></rect><rect x="3" y="13" width="8" height="8" rx="2"></rect><rect x="13" y="13" width="8" height="8" rx="2"></rect></svg>세션</a>
+<a class="tab" href="MFiles.dc.html"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>파일</a>
+<a class="tab" href="MAlerts.dc.html" style="position:relative"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10 21h4"></path></svg>알림<span style="position:absolute;top:4px;left:56%;background:#F2B54A;color:#1A1205;font-size:10px;font-weight:700;border-radius:999px;padding:0 5px;line-height:16px">2</span></a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

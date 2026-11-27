@@ -1,0 +1,745 @@
+/* 색·간격은 docs/mockups 기준 */
+:root {
+  --bg: #0e1014;
+  --surface: #14171d;
+  --surface-2: #161a21;
+  --control: #1f242e;
+  --terminal: #0b0d10;
+  --text: #e8eaf0;
+  --muted: #a0a8b8;
+  --dim: #8a93a5;
+  --accent: #2f6fe4;
+  --working: #6ea8ff;
+  --waiting: #f2b54a;
+  --done: #4cc79a;
+  --error: #f27a82;
+  --ui: "Noto Sans KR Variable", sans-serif;
+  --mono: "JetBrains Mono Variable", monospace;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--ui);
+}
+
+.mono {
+  font-family: var(--mono);
+}
+.muted {
+  color: var(--muted);
+}
+.dim {
+  color: var(--dim);
+}
+
+.btn {
+  font-family: inherit;
+  font-size: 13px;
+  border-radius: 8px;
+  border: 0;
+  background: var(--control);
+  color: var(--text);
+  padding: 7px 12px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn.primary {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 500;
+}
+.btn.ghost {
+  background: transparent;
+  color: var(--muted);
+}
+.btn:focus-visible {
+  outline: 2px solid var(--working);
+  outline-offset: 1px;
+}
+
+.icon {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex: none;
+}
+
+.app {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.topbar {
+  height: 52px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 16px;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: -0.01em;
+}
+.logo {
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+.logo .icon {
+  width: 14px;
+  height: 14px;
+}
+
+.workspace {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  gap: 10px;
+  padding: 0 10px 10px;
+}
+.main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sidebar {
+  flex: 0 0 280px;
+  /* 긴 이름은 폭을 넓히지 않고 말줄임으로 보인다. */
+  min-width: 0;
+  min-height: 0;
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 14px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.side-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.side-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.project {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.project-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px 6px;
+  color: var(--muted);
+}
+.project-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.btn.icon-btn {
+  padding: 4px 6px;
+}
+/* 등록 해제·추가 단추는 가리키거나 키보드로 옮겨 갔을 때만 보인다. */
+.project-head .quiet {
+  opacity: 0;
+  padding: 0 2px;
+}
+.project-head:hover .quiet,
+.project-head .quiet:focus-visible {
+  opacity: 1;
+}
+.sess {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--text);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.sess:hover {
+  background: var(--surface-2);
+}
+.sess.on {
+  background: #1c2130;
+}
+.sess:focus-visible,
+.segment:focus-within {
+  outline: 2px solid var(--working);
+  outline-offset: 1px;
+}
+.sess-text {
+  flex: 1;
+  min-width: 0;
+}
+.sess-name,
+.sess-sub {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.sess-name {
+  font-size: 13px;
+}
+.sess-sub {
+  font-size: 11px;
+}
+.btn.wide {
+  justify-content: center;
+  padding: 10px;
+}
+.btn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.btn.danger {
+  background: #3a1a1e;
+  color: var(--error);
+  font-weight: 500;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  border-radius: 5px;
+  padding: 1px 6px;
+  line-height: 16px;
+  flex: none;
+}
+.badge.svn {
+  background: #2a2140;
+  color: #c3a8ff;
+}
+.badge.git {
+  background: #1b2b22;
+  color: #7fd8ae;
+}
+.badge.folder {
+  background: #232833;
+  color: var(--muted);
+}
+
+.empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: var(--surface);
+  border-radius: 12px;
+  font-size: 13px;
+}
+.banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 10px 10px;
+  background: #221b0e;
+  color: #ebc277;
+  border-radius: 9px;
+  padding: 6px 12px;
+  font-size: 12.5px;
+}
+.grow {
+  flex: 1;
+  min-width: 0;
+}
+
+.dialog {
+  width: min(600px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  padding: 0;
+  border: 0;
+  border-radius: 16px;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow:
+    0 30px 80px #000000a0,
+    0 0 0 1px #20252f;
+}
+.dialog::backdrop {
+  background: #090b0ecc;
+}
+.dialog-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 22px 24px 6px;
+}
+.dialog-head h2 {
+  margin: 0;
+  font-size: 18px;
+}
+.dialog-head p {
+  margin: 4px 0 0;
+  font-size: 13px;
+}
+.dialog-body {
+  padding: 16px 24px 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.dialog-error {
+  margin: 12px 24px 0;
+  background: #3a1a1e;
+  color: #f6b8bd;
+  border-radius: 9px;
+  padding: 9px 12px;
+  font-size: 12.5px;
+}
+.dialog-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 16px 24px 22px;
+}
+.dialog-foot .btn {
+  padding: 9px 14px;
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font-size: 13px;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+.field label,
+.field legend {
+  color: #c7ccd6;
+  font-weight: 500;
+}
+.field legend {
+  padding: 0;
+  margin-bottom: 7px;
+}
+.input {
+  font-family: inherit;
+  font-size: 13px;
+  background: var(--bg);
+  border: 1px solid #262b36;
+  border-radius: 9px;
+  color: var(--text);
+  padding: 10px 12px;
+  min-width: 0;
+}
+.input.mono {
+  font-family: var(--mono);
+}
+textarea.input {
+  resize: none;
+}
+.input:focus-visible {
+  outline: 2px solid var(--working);
+  outline-offset: -1px;
+}
+.row {
+  display: flex;
+  gap: 8px;
+}
+.cols {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.hint {
+  font-size: 12px;
+}
+.detected {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface-2);
+  border-radius: 9px;
+  padding: 10px 12px;
+  font-size: 12.5px;
+}
+.ok {
+  color: var(--done);
+  font-size: 12px;
+}
+.info,
+.warning {
+  margin: 0;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 12.5px;
+  line-height: 19px;
+}
+.info {
+  background: #191c23;
+}
+.warning {
+  background: #221b0e;
+  color: #ebc277;
+}
+.segments {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.segment {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 8px;
+  padding: 8px 12px;
+  background: #191c23;
+  cursor: pointer;
+}
+.segment.on {
+  background: #172036;
+  box-shadow: inset 0 0 0 1.5px var(--accent);
+}
+.segment input {
+  accent-color: var(--working);
+  margin: 0;
+}
+
+.panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  background: var(--surface);
+  overflow: hidden;
+  min-height: 0;
+  min-width: 0;
+}
+.ph {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px 10px;
+}
+.ph-text {
+  flex: 1;
+  min-width: 0;
+}
+.ph-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ph-title .name {
+  font-size: 14px;
+  font-weight: 500;
+}
+.ph-sub {
+  font-size: 11.5px;
+  margin-top: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.state {
+  font-size: 11.5px;
+  font-weight: 500;
+}
+.state.idle,
+.state.running,
+.state.exited {
+  color: var(--muted);
+}
+.state.failed {
+  color: var(--error);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: none;
+  background: var(--dim);
+}
+/* 작업 중·입력 대기 색은 4단계의 상태 훅이 쓴다. */
+.dot.running {
+  background: var(--text);
+}
+.dot.idle,
+.dot.exited {
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px var(--dim);
+}
+.dot.failed {
+  background: var(--error);
+}
+
+.term-box {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  background: var(--terminal);
+  padding: 10px 18px 14px;
+}
+.term-notice {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 10px;
+  background: #3a1a1e;
+  color: #f6b8bd;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12.5px;
+}
+.term-host {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.term-error {
+  flex: 1;
+  background: var(--terminal);
+  color: var(--error);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 13px;
+  padding: 16px;
+}
+
+/* 화면 분할 */
+.layout-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.layout-bar .btn {
+  font-size: 12px;
+  padding: 5px 10px;
+}
+.layout-presets {
+  display: flex;
+  gap: 2px;
+  background: var(--surface);
+  border-radius: 9px;
+  padding: 3px;
+}
+.layout-bar .layout-presets .btn {
+  padding: 5px 8px;
+}
+.btn.pressed {
+  background: #262c38;
+}
+.layout-name {
+  font-size: 12px;
+}
+.layout-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+}
+.layout-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-wrap: anywhere;
+}
+.grid {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+}
+.pane {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  outline: none;
+}
+.pane > .panel,
+.pane > .empty {
+  flex: 1;
+}
+.grid.split .pane.focused::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  box-shadow: inset 0 0 0 1.5px #4a6aa8;
+  pointer-events: none;
+}
+.divider {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+  border-radius: 4px;
+}
+.divider.row {
+  cursor: col-resize;
+}
+.divider.col {
+  cursor: row-resize;
+}
+.divider::after {
+  content: "";
+  width: 4px;
+  height: 36px;
+  border-radius: 2px;
+  background: #2e3442;
+}
+.divider.col::after {
+  width: 36px;
+  height: 4px;
+}
+.divider:focus-visible {
+  outline: 2px solid var(--working);
+}
+.drop-preview {
+  position: absolute;
+  inset: 6px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border-radius: 10px;
+  background: #2f6fe433;
+  box-shadow: inset 0 0 0 2px var(--working);
+  font-size: 13px;
+  font-weight: 500;
+  pointer-events: none;
+}
+.drop-preview.left {
+  right: 50%;
+}
+.drop-preview.right {
+  left: 50%;
+}
+.drop-preview.top {
+  bottom: 50%;
+}
+.drop-preview.bottom {
+  top: 50%;
+}
+.ph,
+.sess {
+  user-select: none;
+}
+.ph {
+  cursor: grab;
+}
+body.dragging,
+body.dragging * {
+  cursor: grabbing !important;
+}
+.divider.held::after {
+  background: var(--working);
+}
+.divider-tip {
+  position: absolute;
+  top: 50%;
+  left: 16px;
+  transform: translateY(-120%);
+  z-index: 3;
+  white-space: nowrap;
+  background: #262c38;
+  font-size: 11.5px;
+  border-radius: 7px;
+  padding: 6px 9px;
+  box-shadow: 0 6px 20px #00000080;
+  pointer-events: none;
+}
+.divider.col .divider-tip {
+  left: 50%;
+  top: 14px;
+  transform: translateX(-50%);
+}
+.sess.dragged {
+  background: #262c38;
+  box-shadow:
+    0 10px 28px #000000a0,
+    inset 0 0 0 1.5px var(--working);
+}
+.side-note {
+  margin: 0;
+  padding: 0 6px;
+  font-size: 11.5px;
+  line-height: 18px;
+}
+.ph-title,
+.ph-title .name {
+  min-width: 0;
+}
+.ph-title .name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ph-title .state,
+.ph > .btn {
+  flex: none;
+  white-space: nowrap;
+}

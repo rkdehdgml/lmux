@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>모바일 파일 탐색</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0E1014}
+a{color:#8DBAFF}a:hover{color:#B8D4FF}
+.mono{font-family:'JetBrains Mono',monospace}
+.muted{color:#A0A8B8}
+.dim{color:#8A93A5}
+.icon{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.row{display:flex;align-items:center;gap:12px;min-height:46px;padding:0 12px;font-size:14px;color:#E8EAF0;text-decoration:none;border-radius:10px}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;color:#A0A8B8;text-decoration:none;min-height:48px;justify-content:center}
+.who{font-size:10.5px;border-radius:5px;padding:1px 6px;line-height:16px}
+.pill{font-family:inherit;font-size:13px;min-height:36px;padding:0 14px;border-radius:999px;border:0;background:#14171D;color:#C7CCD6}
+</style>
+</helmet>
+<div style="width:390px;height:844px;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;color:#E8EAF0;background:#0E1014;display:flex;flex-direction:column">
+<header style="padding:24px 20px 10px;display:flex;flex-direction:column;gap:12px">
+<h1 style="margin:0;font-size:24px;font-weight:700">파일</h1>
+<label for="mf-p" style="position:absolute;width:1px;height:1px;overflow:hidden">프로젝트 선택</label>
+<select id="mf-p" style="font-family:inherit;font-size:14px;min-height:46px;background:#14171D;border:0;border-radius:12px;color:#E8EAF0;padding:0 12px"><option>gov-portal · SVN</option><option>portfolio-cms · Git</option><option>batch-scripts · 폴더</option></select>
+<div style="display:flex;gap:6px">
+<button class="pill">전체</button>
+<button class="pill" style="background:#172036;color:#E8EAF0;box-shadow:inset 0 0 0 1.5px #2F6FE4">세션이 고친 파일 4</button>
+</div>
+</header>
+
+<div style="flex:1;overflow:hidden;padding:4px 8px;display:flex;flex-direction:column;gap:2px">
+<a class="row" href="MFileView.dc.html" style="background:#221B0E"><span class="mono" style="font-size:12px;color:#F2B54A;width:14px">M</span><span style="flex:1;min-width:0"><span style="display:block">MilkApplyController.java</span><span class="mono dim" style="display:block;font-size:11px">src/main/java/…/milk</span></span><span class="who" style="background:#3A2C0C;color:#F2B54A">두 세션</span></a>
+<a class="row" href="MFileView.dc.html"><span class="mono" style="font-size:12px;color:#F2B54A;width:14px">M</span><span style="flex:1;min-width:0"><span style="display:block">apply.jsp</span><span class="mono dim" style="display:block;font-size:11px">WEB-INF/jsp/milk</span></span><span class="who" style="background:#251F12;color:#E9B85E">급식</span></a>
+<a class="row" href="MFileView.dc.html"><span class="mono" style="font-size:12px;color:#F2B54A;width:14px">M</span><span style="flex:1;min-width:0"><span style="display:block">AbsenceMapper.xml</span><span class="mono dim" style="display:block;font-size:11px">resources/mapper</span></span><span class="who" style="background:#1C2130;color:#8DBAFF">결석계</span></a>
+<a class="row" href="MFileView.dc.html"><span class="mono" style="font-size:12px;color:#4CC79A;width:14px">?</span><span style="flex:1;min-width:0"><span style="display:block">AbsenceApiController.java</span><span class="mono dim" style="display:block;font-size:11px">src/main/java/…/absence</span></span><span class="who" style="background:#1C2130;color:#8DBAFF">결석계</span></a>
+<div style="height:1px;background:#1C2029;margin:8px 12px"></div>
+<div class="dim" style="font-size:12px;padding:0 12px 4px">폴더 둘러보기</div>
+<a class="row" href="#"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="color:#8DBAFF"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg><span style="flex:1">src</span><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="color:#8A93A5;width:16px;height:16px"><path d="M9 6l6 6-6 6"></path></svg></a>
+<a class="row" href="#"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="color:#8DBAFF"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg><span style="flex:1">sql</span><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="color:#8A93A5;width:16px;height:16px"><path d="M9 6l6 6-6 6"></path></svg></a>
+<div class="row" style="color:#8A93A5"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg><span style="flex:1">globals.properties</span><span style="font-size:12px">숨김</span></div>
+</div>
+
+<div style="margin:8px 16px 12px;padding:10px 12px;border-radius:11px;background:#14171D;font-size:12px;display:flex;gap:8px;align-items:center" class="muted">
+<svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="width:16px;height:16px"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v4M12 16h.01"></path></svg>
+읽기 전용 · 등록한 프로젝트 폴더 안만 보여요
+</div>
+
+<nav aria-label="하단 메뉴" style="display:flex;background:#14171D;padding:4px 8px 16px">
+<a class="tab" href="MSessions.dc.html"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="width:22px;height:22px"><rect x="3" y="3" width="8" height="8" rx="2"></rect><rect x="13" y="3" width="8" height="8" rx="2"></rect><rect x="3" y="13" width="8" height="8" rx="2"></rect><rect x="13" y="13" width="8" height="8" rx="2"></rect></svg>세션</a>
+<a class="tab" href="MFiles.dc.html" style="color:#8DBAFF" aria-current="page"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="width:22px;height:22px"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>파일</a>
+<a class="tab" href="MAlerts.dc.html"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="width:22px;height:22px"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10 21h4"></path></svg>알림</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
