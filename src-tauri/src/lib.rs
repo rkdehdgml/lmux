@@ -686,7 +686,21 @@ pub fn run() {
                 Some(dir) => dir.into(),
                 None => app.path().app_data_dir()?,
             };
-            app.manage(Mutex::new(Workspace::open(&dir)));
+            let (settings, last_running) = {
+                let ws = Workspace::open(&dir);
+                let s = ws.store.state().settings.clone();
+                let lr = ws.store.state().last_running.clone();
+                app.manage(Mutex::new(ws));
+                (s, lr)
+            };
+
+            // 세션 복원: restore_sessions가 켜져 있고 마지막 실행 세션이 있으면 이벤트 발송
+            if settings.restore_sessions && !last_running.is_empty() {
+                let _ = app.emit(
+                    "restore-sessions",
+                    serde_json::json!({ "sessionIds": last_running }),
+                );
+            }
 
             // 훅 수신 서버 시작 및 이벤트 처리.
             // Arc 클론을 클로저에 이동해 HookServer 스레드가 앱 종료 순서와 무관하게

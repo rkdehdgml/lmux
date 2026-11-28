@@ -93,6 +93,50 @@ export type SessionStatePayload = {
   context: HookContextPayload | null;
 };
 
+export interface AppSettings {
+  notifyWaiting: boolean;
+  notifyDone: boolean;
+  notifyError: boolean;
+  notifyConflict: boolean;
+  notifyContext: boolean;
+  notifyContextThreshold: number;
+  theme: string;
+  language: string;
+  density: string;
+  terminalFont: string;
+  terminalFontSize: number;
+  terminalLineHeight: number;
+  cursorShape: string;
+  webgl: boolean;
+  hideInactive: boolean;
+  scrollbackLines: number;
+  preventSleep: boolean;
+  minimizeToTray: boolean;
+  restoreSessions: boolean;
+}
+
+export const DEFAULT_SETTINGS: AppSettings = {
+  notifyWaiting: true,
+  notifyDone: true,
+  notifyError: true,
+  notifyConflict: true,
+  notifyContext: true,
+  notifyContextThreshold: 80,
+  theme: "dark",
+  language: "ko",
+  density: "normal",
+  terminalFont: "JetBrains Mono",
+  terminalFontSize: 13,
+  terminalLineHeight: 1.6,
+  cursorShape: "block",
+  webgl: true,
+  hideInactive: true,
+  scrollbackLines: 10000,
+  preventSleep: true,
+  minimizeToTray: true,
+  restoreSessions: true,
+};
+
 export const api = {
   appState: () => invoke<{ state: StoredState; warning: string | null }>("app_state"),
   shells: (includeWsl: boolean) => invoke<Shell[]>("shells_list", { includeWsl }),
@@ -128,4 +172,8 @@ export const api = {
     invoke<string>("git_worktree_add_cmd", { projectPath, branch, worktreePath }),
   gitWorktreeRemove: (projectPath: string, worktreePath: string) =>
     invoke<string>("git_worktree_remove_cmd", { projectPath, worktreePath }),
+  getSettings: () => invoke<AppSettings>("get_settings"),
+  saveSettings: (settings: AppSettings) => invoke<void>("save_settings", { settings }),
+  preventSleep: (enable: boolean) => invoke<void>("prevent_sleep", { enable }),
+  updateLastRunning: (ids: string[]) => invoke<void>("update_last_running", { ids }),
 };

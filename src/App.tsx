@@ -192,6 +192,24 @@ export default function App() {
     return () => { void unlisten.then((f) => f()); };
   }, []);
 
+  // 앱 재시작 시 마지막으로 실행 중이던 세션 복원
+  useEffect(() => {
+    const unlisten = listen<{ sessionIds: string[] }>("restore-sessions", ({ payload }) => {
+      for (const id of payload.sessionIds) {
+        void start(id);
+      }
+    });
+    return () => { void unlisten.then((f) => f()); };
+  }, [start]);
+
+  // 실행 중인 세션 목록을 백엔드에 동기화해 다음 시작 시 복원에 쓴다
+  useEffect(() => {
+    const running = Object.entries(runs)
+      .filter(([, r]) => r.started && !r.exit)
+      .map(([id]) => id);
+    void api.updateLastRunning(running).catch(() => {});
+  }, [runs]);
+
   useEffect(() => {
     if (view.tree === savedTree.current) return;
     savedTree.current = view.tree;
