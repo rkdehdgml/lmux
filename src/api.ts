@@ -49,6 +49,50 @@ export const AGENTS: { id: Agent; name: string }[] = [
   { id: "none", name: "셸만" },
 ];
 
+export type TokenCounts = { input: number; output: number; cacheCreation: number; cacheRead: number };
+export type WindowUsage = { today: TokenCounts; fiveHour: TokenCounts; sevenDay: TokenCounts };
+export type AccountLimits = { fiveHour: number; weekly: number; estimated: boolean };
+export type AccountSummary = { name: string; paths: string[]; usage: WindowUsage; limits: AccountLimits };
+
+export type FileStatus = "M" | "A" | "D" | "?" | "C" | "!";
+export type ChangedFile = {
+  relPath: string;
+  status: FileStatus;
+  sessionIds: string[];
+  isConflict: boolean;
+};
+export type ChangeSummary = {
+  kind: Kind;
+  revision: string | null;
+  branch: string | null;
+  files: ChangedFile[];
+  addCount: number;
+  delCount: number;
+};
+export type GitWorktreeInfo = {
+  path: string;
+  branch: string;
+  isLocked: boolean;
+};
+
+export type HookLivePayload =
+  | { type: "working" }
+  | { type: "waiting"; request: string }
+  | { type: "done" };
+
+export type HookContextPayload = {
+  used: number;
+  size: number;
+  estimated: boolean;
+};
+
+export type SessionStatePayload = {
+  id: string;
+  run: number;
+  live: HookLivePayload | null;
+  context: HookContextPayload | null;
+};
+
 export const api = {
   appState: () => invoke<{ state: StoredState; warning: string | null }>("app_state"),
   shells: (includeWsl: boolean) => invoke<Shell[]>("shells_list", { includeWsl }),
@@ -63,4 +107,25 @@ export const api = {
   setLayout: (tree: Node) => invoke<void>("layout_set", { tree }),
   saveLayout: (name: string, tree: Node) => invoke<StoredState>("layout_save", { name, tree }),
   deleteLayout: (id: string) => invoke<StoredState>("layout_delete", { id }),
+  approve: (id: string, run: number, request: string, choice: 1 | 2 | 3) =>
+    invoke<void>("session_approve", { id, run, request, choice }),
+  accountList: () => invoke<AccountSummary[]>("account_list"),
+  getChanges: (projectPath: string) =>
+    invoke<ChangeSummary>("get_changes", { projectPath }),
+  getDiff: (projectPath: string, filePath: string, isGit: boolean) =>
+    invoke<string>("get_diff", { projectPath, filePath, isGit }),
+  svnCommit: (projectPath: string, files: string[], message: string) =>
+    invoke<string>("svn_commit_cmd", { projectPath, files, message }),
+  svnRevert: (projectPath: string, files: string[]) =>
+    invoke<string>("svn_revert_cmd", { projectPath, files }),
+  svnUpdate: (projectPath: string) =>
+    invoke<string>("svn_update_cmd", { projectPath }),
+  gitCommit: (projectPath: string, files: string[], message: string) =>
+    invoke<string>("git_commit_cmd", { projectPath, files, message }),
+  gitWorktreeList: (projectPath: string) =>
+    invoke<GitWorktreeInfo[]>("git_worktree_list_cmd", { projectPath }),
+  gitWorktreeAdd: (projectPath: string, branch: string, worktreePath: string) =>
+    invoke<string>("git_worktree_add_cmd", { projectPath, branch, worktreePath }),
+  gitWorktreeRemove: (projectPath: string, worktreePath: string) =>
+    invoke<string>("git_worktree_remove_cmd", { projectPath, worktreePath }),
 };

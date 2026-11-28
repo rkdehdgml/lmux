@@ -22,6 +22,18 @@
     "allow-session-kill",
     "allow-layout-set",
     "allow-layout-save",
-    "allow-layout-delete"
+    "allow-layout-delete",
+    "allow-session-approve",
+    "allow-account-list",
+    "allow-get-changes",
+    "allow-get-diff",
+    "allow-svn-commit-cmd",
+    "allow-svn-revert-cmd",
+    "allow-svn-update-cmd",
+    "allow-git-commit-cmd",
+    "allow-git-worktree-list-cmd",
+    "allow-git-worktree-add-cmd",
+    "allow-git-worktree-remove-cmd",
+    "notification:allow-notify"
   ]
 }

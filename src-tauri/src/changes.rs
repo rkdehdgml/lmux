@@ -380,6 +380,28 @@ impl FileTracker {
         self.files.lock().unwrap().remove(session);
     }
 
+    /// 해당 경로를 수정한 모든 세션 목록을 반환한다.
+    pub fn sessions_for_file(&self, path: &str) -> Vec<String> {
+        self.files
+            .lock()
+            .unwrap()
+            .iter()
+            .filter(|(_, files)| files.contains(path))
+            .map(|(s, _)| s.clone())
+            .collect()
+    }
+
+    /// 주어진 프로젝트 경로에 속한 세션 목록을 반환한다.
+    pub fn sessions_in_project(&self, project_path: &str) -> Vec<String> {
+        self.session_projects
+            .lock()
+            .unwrap()
+            .iter()
+            .filter(|(_, p)| p.as_str() == project_path)
+            .map(|(s, _)| s.clone())
+            .collect()
+    }
+
     /// project_path 하위 파일을 수정한 다른 세션이 있으면 충돌 경로 목록을 반환한다.
     pub fn conflicts(&self, session: &str, project_path: &str) -> Vec<String> {
         let guard = self.files.lock().unwrap();

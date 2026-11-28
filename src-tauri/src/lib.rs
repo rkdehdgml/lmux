@@ -16,7 +16,7 @@ mod windows;
 mod workspace;
 
 use account::AccountRegistry;
-use changes::FileTracker;
+use changes::{FileTracker, GitWorktreeInfo};
 use events::{Context, Live};
 use hook_server::{HookServer, SessionEvent};
 use std::collections::HashMap;
@@ -445,6 +445,203 @@ fn account_list(registry: State<'_, Mutex<AccountRegistry>>) -> Vec<account::Acc
     reg.all_summaries(usage::now_ms())
 }
 
+// ─────────────────────── 변경 사항 명령 ───────────────────────
+
+#[derive(serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+struct ChangedFilePayload {
+    rel_path: String,
+    status: String,
+    session_ids: Vec<String>,
+    is_conflict: bool,
+}
+
+#[derive(serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+struct ChangeSummaryPayload {
+    kind: String,
+    revision: Option<String>,
+    branch: Option<String>,
+    files: Vec<ChangedFilePayload>,
+    add_count: usize,
+    del_count: usize,
+}
+
+#[tauri::command(async)]
+async fn get_changes(
+    workspace: Shared<'_>,
+    file_tracker: State<'_, FileTracker>,
+    project_path: String,
+) -> Result<ChangeSummaryPayload, String> {
+    let kind = {
+        let ws = lock(&workspace)?;
+        ws.store
+            .state()
+            .projects
+            .iter()
+            .find(|p| p.path == project_path)
+            .map(|p| p.kind)
+            .unwrap_or(Kind::Folder)
+    };
+
+    let (entries_svn, entries_git, branch, revision) = match kind {
+        Kind::Svn => {
+            let entries = changes::svn_status(&project_path)
+                .await
+                .map_err(|e| e.to_string())?;
+            (Some(entries), None, None, None)
+        }
+        Kind::Git => {
+            let entries = changes::git_status(&project_path)
+                .await
+                .map_err(|e| e.to_string())?;
+            let branch = get_git_branch(&project_path);
+            (None, Some(entries), branch, None)
+        }
+        Kind::Folder => (None, None, None, None),
+    };
+
+    let mut files = vec![];
+    let mut add_count = 0usize;
+    let mut del_count = 0usize;
+
+    if let Some(svn) = entries_svn {
+        for e in &svn {
+            let full_path = format!("{}/{}", project_path, e.rel_path);
+            let session_ids = file_tracker.sessions_for_file(&full_path);
+            let is_conflict = session_ids.len() > 1;
+            if e.status == 'A' {
+                add_count += 1;
+            }
+            if e.status == 'D' {
+                del_count += 1;
+            }
+            files.push(ChangedFilePayload {
+                rel_path: e.rel_path.clone(),
+                status: e.status.to_string(),
+                is_conflict,
+                session_ids,
+            });
+        }
+    }
+
+    if let Some(git) = entries_git {
+        for e in &git {
+            let full_path = format!("{}/{}", project_path, e.rel_path);
+            let session_ids = file_tracker.sessions_for_file(&full_path);
+            let is_conflict = session_ids.len() > 1;
+            if e.status == 'A' {
+                add_count += 1;
+            }
+            if e.status == 'D' {
+                del_count += 1;
+            }
+            files.push(ChangedFilePayload {
+                rel_path: e.rel_path.clone(),
+                status: e.status.to_string(),
+                is_conflict,
+                session_ids,
+            });
+        }
+    }
+
+    Ok(ChangeSummaryPayload {
+        kind: format!("{kind:?}").to_lowercase(),
+        revision,
+        branch,
+        files,
+        add_count,
+        del_count,
+    })
+}
+
+fn get_git_branch(project_path: &str) -> Option<String> {
+    std::process::Command::new("git")
+        .args(["-C", project_path, "branch", "--show-current"])
+        .output()
+        .ok()
+        .and_then(|o| String::from_utf8(o.stdout).ok())
+        .map(|s| s.trim().to_string())
+        .filter(|s| !s.is_empty())
+}
+
+#[tauri::command(async)]
+async fn get_diff(project_path: String, file_path: String, is_git: bool) -> Result<String, String> {
+    if is_git {
+        changes::git_diff_file(&project_path, &file_path)
+            .await
+            .map_err(|e| e.to_string())
+    } else {
+        changes::svn_diff_file(&project_path, &file_path)
+            .await
+            .map_err(|e| e.to_string())
+    }
+}
+
+#[tauri::command(async)]
+async fn svn_commit_cmd(
+    project_path: String,
+    files: Vec<String>,
+    message: String,
+) -> Result<String, String> {
+    changes::svn_commit(&project_path, &files, &message)
+        .await
+        .map_err(|e| e.to_string())
+}
+
+#[tauri::command(async)]
+async fn svn_revert_cmd(project_path: String, files: Vec<String>) -> Result<String, String> {
+    changes::svn_revert(&project_path, &files)
+        .await
+        .map_err(|e| e.to_string())
+}
+
+#[tauri::command(async)]
+async fn svn_update_cmd(project_path: String) -> Result<String, String> {
+    changes::svn_update(&project_path)
+        .await
+        .map_err(|e| e.to_string())
+}
+
+#[tauri::command(async)]
+async fn git_commit_cmd(
+    project_path: String,
+    files: Vec<String>,
+    message: String,
+) -> Result<String, String> {
+    changes::git_commit(&project_path, &files, &message)
+        .await
+        .map_err(|e| e.to_string())
+}
+
+#[tauri::command(async)]
+async fn git_worktree_list_cmd(project_path: String) -> Result<Vec<GitWorktreeInfo>, String> {
+    changes::git_worktree_list(&project_path)
+        .await
+        .map_err(|e| e.to_string())
+}
+
+#[tauri::command(async)]
+async fn git_worktree_add_cmd(
+    project_path: String,
+    branch: String,
+    worktree_path: String,
+) -> Result<String, String> {
+    changes::git_worktree_add(&project_path, &branch, &worktree_path)
+        .await
+        .map_err(|e| e.to_string())
+}
+
+#[tauri::command(async)]
+async fn git_worktree_remove_cmd(
+    project_path: String,
+    worktree_path: String,
+) -> Result<String, String> {
+    changes::git_worktree_remove(&project_path, &worktree_path)
+        .await
+        .map_err(|e| e.to_string())
+}
+
 pub fn run() {
     windows::restrict_dll_search();
     tauri::Builder::default()
@@ -506,6 +703,15 @@ pub fn run() {
             layout_delete,
             session_approve,
             account_list,
+            get_changes,
+            get_diff,
+            svn_commit_cmd,
+            svn_revert_cmd,
+            svn_update_cmd,
+            git_commit_cmd,
+            git_worktree_list_cmd,
+            git_worktree_add_cmd,
+            git_worktree_remove_cmd,
         ])
         .build(tauri::generate_context!())
         .expect("error while building tauri application")

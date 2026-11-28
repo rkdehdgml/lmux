@@ -17,6 +17,17 @@ const COMMANDS: &[&str] = &[
     "layout_set",
     "layout_save",
     "layout_delete",
+    "session_approve",
+    "account_list",
+    "get_changes",
+    "get_diff",
+    "svn_commit_cmd",
+    "svn_revert_cmd",
+    "svn_update_cmd",
+    "git_commit_cmd",
+    "git_worktree_list_cmd",
+    "git_worktree_add_cmd",
+    "git_worktree_remove_cmd",
 ];
 
 fn main() {
