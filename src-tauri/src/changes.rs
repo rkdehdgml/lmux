@@ -76,13 +76,14 @@ pub async fn svn_status(project_path: &str) -> anyhow::Result<Vec<SvnEntry>> {
 
 pub async fn svn_diff_file(project_path: &str, rel_path: &str) -> anyhow::Result<String> {
     let output = Command::new("svn")
-        .args(["diff", rel_path])
+        .args(["diff", "--", rel_path])
         .current_dir(project_path)
         .output()
         .map_err(|e| anyhow::anyhow!("svn 실행 오류: {e}"))?;
     let mut s = String::from_utf8_lossy(&output.stdout).into_owned();
     if s.len() > MAX_DIFF_BYTES {
-        s.truncate(MAX_DIFF_BYTES);
+        let cut = s.floor_char_boundary(MAX_DIFF_BYTES);
+        s.truncate(cut);
         s.push_str("\n... (diff truncated) ...");
     }
     Ok(s)
@@ -190,9 +191,10 @@ pub fn parse_git_worktree_list(output: &[u8]) -> Vec<GitWorktreeInfo> {
             current_branch = String::new();
             is_locked = false;
         } else if line.starts_with("branch ") {
-            current_branch = line
-                .trim_start_matches("branch refs/heads/")
-                .trim_start_matches("branch ")
+            let rest = line.strip_prefix("branch ").unwrap_or(line);
+            current_branch = rest
+                .strip_prefix("refs/heads/")
+                .unwrap_or(rest)
                 .to_string();
         } else if line.starts_with("locked") {
             is_locked = true;
@@ -224,12 +226,13 @@ pub async fn git_status(project_path: &str) -> anyhow::Result<Vec<GitEntry>> {
 
 pub async fn git_diff_file(project_path: &str, rel_path: &str) -> anyhow::Result<String> {
     let output = Command::new("git")
-        .args(["-C", project_path, "diff", rel_path])
+        .args(["-C", project_path, "diff", "--", rel_path])
         .output()
         .map_err(|e| anyhow::anyhow!("git 실행 오류: {e}"))?;
     let mut s = String::from_utf8_lossy(&output.stdout).into_owned();
     if s.len() > MAX_DIFF_BYTES {
-        s.truncate(MAX_DIFF_BYTES);
+        let cut = s.floor_char_boundary(MAX_DIFF_BYTES);
+        s.truncate(cut);
         s.push_str("\n... (diff truncated) ...");
     }
     Ok(s)
@@ -292,7 +295,7 @@ pub async fn git_worktree_add(
         return Err(anyhow::anyhow!("이미 있는 경로예요: {worktree_path}"));
     }
     let output = Command::new("git")
-        .args(["-C", project_path, "worktree", "add", worktree_path, branch])
+        .args(["-C", project_path, "worktree", "add", "--", worktree_path, branch])
         .output()
         .map_err(|e| anyhow::anyhow!("git 실행 오류: {e}"))?;
     if !output.status.success() {

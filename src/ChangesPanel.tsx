@@ -127,6 +127,7 @@ export default function ChangesPanel({ project, sessions, onClose }: Props) {
   }, [project]);
 
   useEffect(() => { load(); }, [load]);
+  useEffect(() => () => { if (toastRef.current) clearTimeout(toastRef.current); }, []);
 
   const selectFile = useCallback(async (relPath: string) => {
     setSelectedFile(relPath);
@@ -169,6 +170,7 @@ export default function ChangesPanel({ project, sessions, onClose }: Props) {
   }, [project, checkedFiles, commitMsg, load, showToast]);
 
   const handleRevert = useCallback(async () => {
+    if (project.kind !== "svn") return;
     const files = [...checkedFiles];
     if (files.length === 0) { showToast("되돌릴 파일을 선택해 주세요."); return; }
     if (!window.confirm(`${files.length}개 파일을 되돌릴까요?`)) return;

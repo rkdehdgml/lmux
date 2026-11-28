@@ -26,7 +26,7 @@ use layout::Node;
 use session::{AttachInfo, Sessions};
 use shell::ShellInfo;
 use std::path::Path;
-use std::sync::{Mutex, MutexGuard};
+use std::sync::{Arc, Mutex, MutexGuard};
 use store::{Kind, State as StoredState};
 use tauri::ipc::{Channel, InvokeResponseBody};
 use tauri::{AppHandle, Emitter, Manager, State};
@@ -235,8 +235,8 @@ fn session_start(
     workspace: Shared<'_>,
     sessions: State<'_, Sessions>,
     hook_server: State<'_, HookServer>,
-    hook_states: State<'_, HookStates>,
-    file_tracker: State<'_, FileTracker>,
+    hook_states: State<'_, Arc<HookStates>>,
+    file_tracker: State<'_, Arc<FileTracker>>,
     id: String,
     cols: u16,
     rows: u16,
@@ -338,7 +338,7 @@ fn session_start(
 #[tauri::command(async)]
 fn session_approve(
     sessions: State<'_, Sessions>,
-    hook_states: State<'_, HookStates>,
+    hook_states: State<'_, Arc<HookStates>>,
     id: String,
     run: u64,
     request: String,
@@ -470,7 +470,7 @@ struct ChangeSummaryPayload {
 #[tauri::command(async)]
 async fn get_changes(
     workspace: Shared<'_>,
-    file_tracker: State<'_, FileTracker>,
+    file_tracker: State<'_, Arc<FileTracker>>,
     project_path: String,
 ) -> Result<ChangeSummaryPayload, String> {
     let kind = {
@@ -648,8 +648,8 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_notification::init())
         .manage(Sessions::default())
-        .manage(HookStates::default())
-        .manage(FileTracker::default())
+        .manage(Arc::new(HookStates::default()))
+        .manage(Arc::new(FileTracker::default()))
         .manage(Mutex::new(AccountRegistry::new()))
         .setup(|app| {
             // LMUX_DATA_DIR은 확인 스크립트가 실제 데이터와 분리할 때 쓴다.
@@ -660,14 +660,13 @@ pub fn run() {
             app.manage(Mutex::new(Workspace::open(&dir)));
 
             // 훅 수신 서버 시작 및 이벤트 처리.
+            // Arc 클론을 클로저에 이동해 HookServer 스레드가 앱 종료 순서와 무관하게
+            // 데이터를 안전하게 참조할 수 있도록 한다.
             let hook_app = app.handle().clone();
-            let hook_states_handle = app.state::<HookStates>().inner() as *const HookStates;
-            let file_tracker_handle = app.state::<FileTracker>().inner() as *const FileTracker;
-            // SAFETY: HookStates와 FileTracker는 app이 살아 있는 동안 drop되지 않는다.
-            let hook_states_ref: &'static HookStates = unsafe { &*hook_states_handle };
-            let file_tracker_ref: &'static FileTracker = unsafe { &*file_tracker_handle };
+            let hs_arc = Arc::clone(&*app.state::<Arc<HookStates>>());
+            let ft_arc = Arc::clone(&*app.state::<Arc<FileTracker>>());
             let server = HookServer::start(move |ev: SessionEvent| {
-                process_hook_event(&hook_app, hook_states_ref, file_tracker_ref, ev);
+                process_hook_event(&hook_app, &*hs_arc, &*ft_arc, ev);
             })
             .expect("훅 수신 서버를 시작하지 못했어요");
             app.manage(server);
