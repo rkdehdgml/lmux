@@ -57,6 +57,29 @@ pub struct SessionRecord {
     pub custom_command: String,
 }
 
+/// 모바일 기기 접근 권한.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+#[serde(rename_all = "lowercase")]
+pub enum MobilePermission {
+    /// 조회만 허용.
+    View,
+    /// 조회 + 터미널 입력 허용.
+    Input,
+}
+
+/// 등록된 모바일 기기.
+#[derive(Serialize, Deserialize, Clone, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct MobileDevice {
+    pub id: String,
+    pub name: String,
+    /// SHA-256 해시 (평문 token은 저장하지 않음).
+    pub token_hash: String,
+    pub permission: MobilePermission,
+    pub registered_ms: u64,
+    pub last_seen_ms: u64,
+}
+
 #[derive(Serialize, Deserialize, Clone, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct Settings {
@@ -126,6 +149,8 @@ pub struct State {
     pub settings: Settings,
     #[serde(default)]
     pub last_running: Vec<String>,
+    #[serde(default)]
+    pub mobile_devices: Vec<MobileDevice>,
 }
 
 impl Default for State {
@@ -139,6 +164,7 @@ impl Default for State {
             saved_layouts: Vec::new(),
             settings: Settings::default(),
             last_running: Vec::new(),
+            mobile_devices: Vec::new(),
         }
     }
 }
@@ -562,6 +588,68 @@ impl Store {
     pub fn update_last_running(&mut self, ids: Vec<String>) -> Result<(), String> {
         self.change(|state| {
             state.last_running = ids;
+            Ok(())
+        })
+    }
+
+    pub fn add_mobile_device(
+        &mut self,
+        name: &str,
+        token_hash: &str,
+        permission: MobilePermission,
+    ) -> Result<MobileDevice, String> {
+        self.change(|state| {
+            let now_ms = SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap_or_default()
+                .as_millis() as u64;
+            let id = next_id(state, "m");
+            let device = MobileDevice {
+                id,
+                name: name.into(),
+                token_hash: token_hash.into(),
+                permission,
+                registered_ms: now_ms,
+                last_seen_ms: now_ms,
+            };
+            state.mobile_devices.push(device.clone());
+            Ok(device)
+        })
+    }
+
+    pub fn revoke_mobile_device(&mut self, id: &str) -> Result<(), String> {
+        self.change(|state| {
+            let before = state.mobile_devices.len();
+            state.mobile_devices.retain(|d| d.id != id);
+            if state.mobile_devices.len() == before {
+                return Err("기기가 없어요".into());
+            }
+            Ok(())
+        })
+    }
+
+    pub fn set_mobile_permission(&mut self, id: &str, permission: MobilePermission) -> Result<(), String> {
+        self.change(|state| {
+            let device = state
+                .mobile_devices
+                .iter_mut()
+                .find(|d| d.id == id)
+                .ok_or_else(|| "기기가 없어요".to_string())?;
+            device.permission = permission;
+            Ok(())
+        })
+    }
+
+    #[allow(dead_code)]
+    pub fn touch_mobile_device(&mut self, token_hash: &str) -> Result<(), String> {
+        self.change(|state| {
+            let now_ms = SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap_or_default()
+                .as_millis() as u64;
+            if let Some(d) = state.mobile_devices.iter_mut().find(|d| d.token_hash == token_hash) {
+                d.last_seen_ms = now_ms;
+            }
             Ok(())
         })
     }

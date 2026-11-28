@@ -33,6 +33,16 @@ tauri-plugin-dialog = "2"
 tauri-plugin-notification = "2"
 tiny_http = "0.12"
 anyhow = "1"
+# Mobile server
+axum = "0.7"
+tokio = { version = "1", features = ["rt", "net", "io-util", "sync", "time"] }
+rand = "0.8"
+sha2 = "0.10"
+hex = "0.4"
+qrcode = { version = "0.14", default-features = false, features = ["svg"] }
+base64 = { version = "0.22", features = ["std"] }
+tokio-stream = "0.1"
+futures-util = { version = "0.3", default-features = false, features = ["sink"] }
 
 [dev-dependencies]
 tempfile = "3"

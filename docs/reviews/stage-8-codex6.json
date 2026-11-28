@@ -1,0 +1,33 @@
+Claude launches can lose their hook settings before reading them, and mobile viewing can displace the desktop terminal for the rest of a run. Mobile pairing also lacks a desktop workflow and the required HTTPS transport. These findings are based on static inspection; the test suite was not run.
+
+Full review comments:
+
+- [P1] Require HTTPS before enabling mobile access — C:/dev/dhkang/lmux/src-tauri/src/mobile.rs:438-453
+  `MobileServer::start` starts a plaintext listener and hardcodes `tls_ok: false`, so the QR flow sends pairing credentials and subsequent bearer tokens over HTTP. Binding to a Tailscale address does not provide browser-level HTTPS or the secure context required by service workers. Serve the mobile routes with the Tailscale certificate and fail closed if HTTPS is unavailable, as required by [docs/spec.md:76](docs/spec.md#L76).
+
+- [P1] Keep hook settings available until Claude reads them — C:/dev/dhkang/lmux/src-tauri/src/workspace.rs:137-139
+  `session_start` calls `Workspace::launched` after spawning the PTY, but the startup command is sent asynchronously by the output pump. Calling `forget` here deletes the `--settings` file before Claude is guaranteed to open it, so a normal launch can fail to load its hooks. Clear the one-shot prompt here and remove the settings file when the run ends or the session is deleted.
+
+- [P1] Put the configured event name in each hook URL — C:/dev/dhkang/lmux/src-tauri/src/hooks.rs:27-33
+  Every generated hook reuses the same command and depends on `CLAUDE_HOOK_EVENT` being present and expanded using the right shell syntax. Claude supplies the event name in the JSON payload, and the WSL command also puts the expansion inside single quotes, so the server receives a literal or empty event segment instead of a recognized name. Use the event name already available in the generator when constructing each URL.
+
+- [P1] Keep mobile terminal viewers separate from the desktop viewer — C:/dev/dhkang/lmux/src-tauri/src/mobile.rs:729-739
+  `Sessions::attach` replaces the sole viewer and rejects IDs lower than `latest_viewer`. A mobile stream uses an ID with bit 62 set, so opening it evicts the desktop terminal and prevents its `Date.now()`-based viewer IDs from reattaching for the rest of that run, even after the mobile stream detaches. Use a separate output subscription for mobile rather than taking over the desktop attachment.
+
+- [P1] Connect mobile pairing to the desktop UI — C:/dev/dhkang/lmux/src-tauri/src/lib.rs:949-953
+  The desktop registers mobile commands but has no UI caller for server startup, QR display, or pairing approval. The phone can only create a pending request and poll it; the normal desktop workflow gives the user no way to see the request, compare the six-digit code, or approve it. Wire up the desktop side of the pairing flow required by [docs/spec.md:66](docs/spec.md#L66) and [docs/spec.md:76](docs/spec.md#L76).
+
+- [P2] Terminate active terminal streams when a device is revoked — C:/dev/dhkang/lmux/src-tauri/src/mobile.rs:749-757
+  The stream authenticates only when it opens. Revoking a device blocks new requests, but an already-connected device can continue receiving terminal output until the five-minute detach timer fires. Track streams by device and close them on revocation so device removal ends existing access as well as new access ([docs/spec.md:76](docs/spec.md#L76)).
+
+- [P2] Apply the sensitive-file filter to resolved paths — C:/dev/dhkang/lmux/src-tauri/src/mobile.rs:987-998
+  The content handler canonicalizes the path but checks only the original query components for sensitive names. If a registered project contains a symlink or junction to a sensitive file or directory inside that project, the resolved target passes the root check while its sensitive name is never checked. Apply the filter to the canonical path relative to the project root as well, to preserve the file-hiding requirement in [docs/spec.md:76](docs/spec.md#L76).
+
+- [P2] Register PostToolUse so file conflicts can be detected — C:/dev/dhkang/lmux/src-tauri/src/hooks.rs:20-26
+  The generated settings omit `PostToolUse`, but `process_hook_event` records edited paths only for that event. Even after hook delivery works, normal Claude edits will not reach the file tracker, so two sessions editing the same file cannot trigger the warning required by [docs/spec.md:52](docs/spec.md#L52).
+
+- [P2] Generate hook authentication tokens from a secure RNG — C:/dev/dhkang/lmux/src-tauri/src/workspace.rs:165-174
+  The hook server uses this token to authenticate local event submissions, but the generator encodes the launch timestamp and a sequential counter. The output length does not make those values unpredictable to a local process that can observe launch timing. Use OS-backed random bytes rather than treating uniqueness as proof of entropy.
+
+- [P2] Deliver notifications to mobile push subscribers — C:/dev/dhkang/lmux/src-tauri/src/mobile.rs:1075-1080
+  The subscription handler returns success after storing the endpoint and keys, but no notification path reads the store or sends a Web Push message. Even with a valid subscription and HTTPS, session events can only produce desktop notifications. Connect the notification path to mobile push delivery and keep message content off by default, as specified in [docs/spec.md:76](docs/spec.md#L76).

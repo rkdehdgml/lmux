@@ -63,8 +63,25 @@ pub fn argument(kind: ShellKind, prompt: &str) -> Option<String> {
     })
 }
 
+/// `--settings <path>` 인수. Claude에만 사용하고, 경로는 셸 규칙에 맞게 인용한다.
+fn settings_arg(kind: ShellKind, path: &str) -> String {
+    let quoted = match kind {
+        ShellKind::PowerShell => format!("'{}'", path.replace('\'', "''")),
+        ShellKind::Cmd => format!("\"{}\"", path),
+        ShellKind::Posix => format!("'{}'", path.replace('\'', "'\\''")),
+    };
+    format!("--settings {quoted}")
+}
+
 /// 입력할 명령 줄. 에이전트가 없으면 None.
-pub fn command_line(kind: ShellKind, agent: Agent, custom: &str, prompt: &str) -> Option<String> {
+/// `settings_path`는 Claude일 때만 적용된다.
+pub fn command_line(
+    kind: ShellKind,
+    agent: Agent,
+    custom: &str,
+    prompt: &str,
+    settings_path: Option<&str>,
+) -> Option<String> {
     let program = match agent {
         Agent::None => return None,
         Agent::Claude => "claude",
@@ -74,10 +91,18 @@ pub fn command_line(kind: ShellKind, agent: Agent, custom: &str, prompt: &str) -
             return Some(flatten(custom).trim().to_string()).filter(|c| !c.is_empty());
         }
     };
-    let line = match argument(kind, prompt) {
-        Some(argument) => format!("{program} {argument}"),
-        None => program.to_string(),
-    };
+
+    let mut parts = vec![program.to_string()];
+    if agent == Agent::Claude
+        && let Some(path) = settings_path
+    {
+        parts.push(settings_arg(kind, path));
+    }
+    if let Some(arg) = argument(kind, prompt) {
+        parts.push(arg);
+    }
+    let line = parts.join(" ");
+
     Some(match kind {
         // cmd는 현재 폴더를 먼저 찾아, 프로젝트에 심은 `claude.cmd`가 대신 실행될 수 있다.
         ShellKind::Cmd => format!("set \"NoDefaultCurrentDirectoryInExePath=1\" & {line}"),
@@ -91,16 +116,16 @@ mod tests {
     use ShellKind::{Cmd, Posix, PowerShell};
 
     fn claude(kind: ShellKind, prompt: &str) -> String {
-        command_line(kind, Agent::Claude, "", prompt).unwrap()
+        command_line(kind, Agent::Claude, "", prompt, None).unwrap()
     }
 
     #[test]
     fn runs_the_agent_with_no_argument_when_there_is_no_prompt() {
-        assert_eq!(command_line(PowerShell, Agent::None, "", "x"), None);
+        assert_eq!(command_line(PowerShell, Agent::None, "", "x", None), None);
         assert_eq!(claude(PowerShell, ""), "claude");
         assert_eq!(claude(Posix, " \r\n "), "claude");
         assert_eq!(
-            command_line(Cmd, Agent::Codex, "", "").as_deref(),
+            command_line(Cmd, Agent::Codex, "", "", None).as_deref(),
             Some(r#"set "NoDefaultCurrentDirectoryInExePath=1" & codex"#)
         );
     }
@@ -156,9 +181,72 @@ mod tests {
     #[test]
     fn types_a_custom_command_as_written() {
         assert_eq!(
-            command_line(Cmd, Agent::Custom, "  aider --model \"x\"\n", "ignored").as_deref(),
+            command_line(
+                Cmd,
+                Agent::Custom,
+                "  aider --model \"x\"\n",
+                "ignored",
+                None
+            )
+            .as_deref(),
             Some("aider --model \"x\"")
         );
-        assert_eq!(command_line(Cmd, Agent::Custom, "  ", ""), None);
+        assert_eq!(command_line(Cmd, Agent::Custom, "  ", "", None), None);
+    }
+
+    #[test]
+    fn settings_path_added_only_for_claude() {
+        let path = r"C:\data\hooks\sess.json";
+        // Claude: --settings 추가
+        let ps = command_line(PowerShell, Agent::Claude, "", "", Some(path)).unwrap();
+        assert!(ps.contains("--settings"), "PowerShell: {ps}");
+        // Codex/None: --settings 없음
+        let codex = command_line(PowerShell, Agent::Codex, "", "", Some(path)).unwrap();
+        assert!(!codex.contains("--settings"), "Codex: {codex}");
+        assert_eq!(
+            command_line(PowerShell, Agent::None, "", "", Some(path)),
+            None
+        );
+    }
+
+    #[test]
+    fn settings_path_quoted_for_each_shell() {
+        let path = r"C:\Users\some user\AppData\hooks\s.json";
+        // PowerShell: 작은따옴표
+        let ps = command_line(PowerShell, Agent::Claude, "", "", Some(path)).unwrap();
+        assert!(
+            ps.contains(&format!("--settings '{path}'")),
+            "PowerShell: {ps}"
+        );
+        // Cmd: 큰따옴표
+        let cmd = command_line(Cmd, Agent::Claude, "", "", Some(path)).unwrap();
+        assert!(
+            cmd.contains(&format!("--settings \"{path}\"")),
+            "Cmd: {cmd}"
+        );
+        // Posix: 작은따옴표
+        let posix = command_line(Posix, Agent::Claude, "", "", Some(path)).unwrap();
+        assert!(
+            posix.contains(&format!("--settings '{path}'")),
+            "Posix: {posix}"
+        );
+    }
+
+    #[test]
+    fn settings_comes_before_prompt_argument() {
+        let ps = command_line(
+            PowerShell,
+            Agent::Claude,
+            "",
+            "do it",
+            Some(r"C:\hooks\s.json"),
+        )
+        .unwrap();
+        let settings_pos = ps.find("--settings").unwrap();
+        let prompt_pos = ps.find("do it").unwrap();
+        assert!(
+            settings_pos < prompt_pos,
+            "--settings must come before prompt: {ps}"
+        );
     }
 }

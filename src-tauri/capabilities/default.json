@@ -34,6 +34,15 @@
     "allow-git-worktree-list-cmd",
     "allow-git-worktree-add-cmd",
     "allow-git-worktree-remove-cmd",
-    "notification:allow-notify"
+    "notification:allow-notify",
+    "allow-mobile-start",
+    "allow-mobile-status",
+    "allow-mobile-qr-info",
+    "allow-mobile-approve-pairing",
+    "allow-mobile-reject-pairing",
+    "allow-mobile-revoke-device",
+    "allow-mobile-set-permission",
+    "allow-mobile-get-devices",
+    "allow-mobile-access-log"
   ]
 }

@@ -84,7 +84,77 @@
 - 2단계 빌드로 되돌려 저장하면 배치만 사라짐(D39).
 - 스냅샷 `backups/stage-3.zip`. 다음은 4단계(훅 상태·컨텍스트·승인·알림). 시작하지 않음.
 
-## 4단계: 설계·계획만 완료 (2026-11-27, 구현은 노트북에서)
-- `/grill-me`로 사용자와 3라운드에 걸쳐 결정 → `docs/superpowers/specs/2026-11-27-stage-4-design.md`, `docs/superpowers/plans/2026-11-27-stage-4.md`, 결정 D43~D51.
-- 코드는 아직 없음. 첫 작업은 실제 Claude 1회 실행으로 가정 확인(계획서 Task 0).
-- `docs/tooling.md`에 이어서 작업할 때 쓰는 스킬·플러그인을 정리, 사용자 개인 스킬은 `tooling/skills/codex-crosscheck/`.
+## 4단계: 훅 상태·컨텍스트·승인·알림 (통과, 2026-11-27)
+
+계획: `docs/superpowers/plans/2026-11-27-stage-4.md`
+
+### 한 일
+- `src-tauri/src/events.rs` — Hook/Live/Context 타입, parse(), next(). 세션 훅 이벤트 → 상태 전이.
+- `src-tauri/src/context.rs` — from_transcript() (파일 끝 2 MiB, isSidechain 제외). 미연결(5단계 예정).
+- `src-tauri/src/hooks.rs` — settings_json() (curl.exe || true, WSL fallback). write/remove.
+- `src-tauri/src/hook_server.rs` — tiny_http 127.0.0.1 수신 서버. 토큰/1 MiB 검증, 요청별 스레드.
+- `src-tauri/src/notifications.rs` — should_notify(), notification_title(). 순수 함수 + 단위 테스트.
+- `src-tauri/src/agent.rs` — settings_arg(), command_line() 5번째 인수 추가.
+- `src-tauri/src/workspace.rs` — write/remove_hook_settings(), generate_token(80비트), windows_to_wsl_path().
+- `src-tauri/src/lib.rs` — HookStates, session_start 훅 연결, session_approve(3중 검증), process_hook_event, 알림.
+- 프론트: hookStatusText/contextColor/formatContext(model.ts), api.approve(api.ts), session-state 구독(App.tsx), 훅 점·ctx 미니바(Sidebar.tsx), ctx 링·승인 단추 행(SessionPanel.tsx), 스타일(styles.css).
+- `scripts/e2e/stage-4.sh` — 가짜 claude(훅 발송) + 직접 실행 확인 스크립트.
+- `src-tauri/src/notifications.rs` — tauri-plugin-notification 연동.
+
+### 바뀐 파일
+- Rust(신규): `events.rs`, `context.rs`, `hooks.rs`, `hook_server.rs`, `notifications.rs`
+- Rust(수정): `agent.rs`, `workspace.rs`, `lib.rs`, `session.rs`, `build.rs`, `Cargo.toml`, `Cargo.lock`
+- 프론트(수정): `model.ts`, `model.test.ts`, `api.ts`, `App.tsx`, `SessionPanel.tsx`, `Sidebar.tsx`, `styles.css`
+- 스크립트(신규): `scripts/e2e/stage-4.sh`
+- 권한(신규): `capabilities/default.json` (allow-session-approve, notification:allow-notify)
+
+### 검증 결과
+- 테스트: vitest 39건, cargo test 124건 통과. clippy -D warnings 경고 없음.
+- 직접 실행 확인: `scripts/e2e/stage-4.sh`로 확인 (가짜 claude + agent-browser 자동화).
+- 교차검증: rust-reviewer 1차 MEDIUM 2건(cargo fmt, generate_token 엔트로피) + Codex 1차 MEDIUM 1건(WSL 설정 경로) → **1차 수정 후 높음·중간 없음, 통과** (`docs/reviews/stage-4.md`).
+
+### 수정 내용 (검토 반영)
+- `cargo fmt` 적용 (여러 Rust 파일)
+- `generate_token()` 엔트로피 개선: subsec_nanos만 → `secs + nanos + counter` (12자→20자, ~80비트)
+- WSL `--settings` 경로 변환: `windows_to_wsl_path()` 추가, WSL 세션에 `/mnt/c/...` 경로 전달
+
+### 남은 문제
+- context 파서(`from_transcript`) 미연결 — 5단계 예정.
+- context.rs UTF-8 경계 seek 개선 — context 연결 시 함께 수정.
+- Ubuntu WSL fallback 진단 개선 — 낮음.
+- 스냅샷 `backups/stage-4.zip`. 다음은 5단계(계정 사용량). 시작하지 않음.
+
+## 5단계: 계정 사용량 30초 갱신 (통과, 2026-11-28)
+
+계획: `docs/superpowers/plans/2026-11-28-stage-5-account-usage.md`
+
+### 한 일
+- `src-tauri/src/usage.rs` — `TokenCounts`, `WindowUsage`, `iso_to_unix_ms`, `aggregate_folder`. ISO 8601 UTC 파서, 오늘·5시간·7일 창 집계.
+- `src-tauri/src/account.rs` — `AccountLimits`, `AccountSummary`, `AccountRegistry`. `~/.claude` 폴더 탐색, WSL 배포판별 경로 포함.
+- `src-tauri/src/lib.rs` — `account_list` 커맨드, 30초 usage-tick 타이머, `usages` / `tick_secs` 앱 상태.
+- `src/api.ts` — `AccountSummary` 타입, `api.accountList()`, `account-usage-tick` 이벤트 구독.
+- `src/AccountsPanel.tsx` — `formatTokens` 유틸, 계정 카드 모달(아바타·이름·경로·5h/주간 바·오늘 통계). 오버레이+그리드.
+- `src/App.tsx` — `usages`, `tickSecs` 상태, usage-cluster 클릭 → 계정 패널 열기.
+- `src/styles.css` — accounts-overlay, accounts-panel, acc-card 스타일.
+- `src/AccountsPanel.test.tsx` — `formatTokens` 7개 테스트.
+
+### 바뀐 파일
+- Rust(신규): `src-tauri/src/usage.rs`, `src-tauri/src/account.rs`
+- Rust(수정): `src-tauri/src/lib.rs`, `src-tauri/Cargo.toml`, `Cargo.lock`
+- 프론트(신규): `src/AccountsPanel.tsx`, `src/AccountsPanel.test.tsx`
+- 프론트(수정): `src/api.ts`, `src/App.tsx`, `src/styles.css`
+
+### 검증 결과
+- 테스트: vitest 46건, cargo test 133건 통과. clippy -D warnings 경고 없음, cargo fmt 적용.
+- 빌드: `npm run build` 통과, `npx tauri build --no-bundle` 통과.
+- 교차검증: Codex 1차 높음 2·중간 1 → **수정 후 높음·중간 없음, 통과** (`docs/reviews/stage-5.md`).
+
+### 수정 내용 (검토 반영)
+- `iso_to_unix_ms`: `trim_end_matches('Z')` → `strip_suffix('Z')?` (Z 없으면 None, UTC 필수화)
+- `iso_to_unix_ms`: `&frac[..3]` 바이트 슬라이스 → `frac.chars().take(3).filter(|c| c.is_ascii_digit()).collect()` (UTF-8 안전)
+- `formatTokens`: K→M 경계 버그 수정 — `Math.round(999500/1000)` = 1000 → "1000K" 대신 "1.0M"
+
+### 남은 문제
+- 타이머 주기 변경(1분·5분 선택)은 7단계(설정) 범위.
+- 경로 표시는 로컬 도구 특성상 의도된 동작.
+- 스냅샷 `backups/stage-5.zip`. 다음은 6단계(SVN·Git 변경·충돌 경고·워크트리). 시작하지 않음.

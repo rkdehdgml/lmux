@@ -1,0 +1,27 @@
+The Claude hook setup can fail before the agent reads its settings, and mobile streaming can disconnect the desktop terminal for the rest of a run. The mobile feature also lacks a complete pairing flow and the HTTPS transport required by the project specification.
+
+Full review comments:
+
+- [P1] Keep Claude’s hook settings until the session ends — C:\dev\dhkang\lmux\src-tauri\src\workspace.rs:139-145
+  `session_start` calls `ws.launched()` immediately after starting the PTY, but the PTY types the Claude command asynchronously. `launched()` now calls `forget()`, which deletes the JSON file passed to `--settings`. Claude can therefore start after the file is gone, leaving the session without hooks. Clear only the initial prompt on launch and remove the settings when the session ends or is deleted. This preserves the repository’s `--settings` injection approach ([CLAUDE.md:13](CLAUDE.md#L13)).
+
+- [P1] Put the registered event name in each Claude hook URL — C:\dev\dhkang\lmux\src-tauri\src\hooks.rs:27-33
+  Every generated hook command uses a shell placeholder instead of the event name already available as `e`. On WSL, the single-quoted URL prevents expansion even if the variable is set, so the receiver gets a literal placeholder rather than an event such as `Stop`. The native command also depends on a variable that the observed hook payload supplies as a JSON field, not as an environment variable. Generate the URL from the registered event name so live state, context updates, and approval notifications reach the app.
+
+- [P1] Keep mobile streams from replacing desktop terminal viewers — C:\dev\dhkang\lmux\src-tauri\src\mobile.rs:729-737
+  `Sessions::attach` has one viewer slot and rejects IDs lower than the last attached ID. A phone opening a stream replaces the desktop viewer with a random ID far above the desktop’s timestamp-based sequence. The desktop then cannot reattach for the rest of that run, even after the stream detaches, and a subsequent phone reconnect can fail for the same reason. Give mobile streams a separate subscription path rather than taking over the desktop viewer slot.
+
+- [P1] Complete desktop pairing with six-digit verification — C:\dev\dhkang\lmux\src-tauri\src\mobile.rs:593-601
+  The pairing endpoint returns the pair ID and six-digit code only to the phone; it neither notifies the desktop nor exposes a pending request for the desktop to retrieve. The frontend also has no mobile setup flow, and the approval command takes only a pair ID without checking the code. A user cannot complete pairing in the app, and calling the approval command directly does not enforce the required confirmation ([docs/spec.md:76](docs/spec.md#L76)).
+
+- [P1] Require HTTPS before enabling the mobile server — C:\dev\dhkang\lmux\src-tauri\src\mobile.rs:448-453
+  The server always sets `tls_ok` to `false`, so the QR code opens an HTTP origin even when a Tailscale hostname is available. The tunnel does not make that origin a secure context for the phone browser, so the bundled service worker and Web Push cannot work there. Serve the mobile routes over the specified Tailscale HTTPS endpoint and report a setup error rather than advertising HTTP pairing ([docs/spec.md:76](docs/spec.md#L76)).
+
+- [P2] Close active terminal streams when a device is revoked — C:\dev\dhkang\lmux\src-tauri\src\mobile.rs:747-754
+  If the phone already has a terminal stream open when the user revokes it, removing its token blocks new requests but leaves the existing stream receiving output until it closes or the five-minute timer fires. Associate streams with the authenticated device and cancel them on revocation so the device loses access immediately ([docs/spec.md:76](docs/spec.md#L76)).
+
+- [P2] Connect Web Push subscriptions to notification delivery — C:\dev\dhkang\lmux\src-tauri\src\mobile.rs:1089-1097
+  The subscription endpoint stores the submitted details, but the PWA never calls `PushManager.subscribe()` and no backend notification path reads those subscriptions to send a push. Even with HTTPS configured, phones will not receive the specified alerts. Wire up both subscription and delivery, keeping notification content off by default as required ([docs/spec.md:76](docs/spec.md#L76)).
+
+- [P2] Generate hook authentication tokens from secure randomness — C:\dev\dhkang\lmux\src-tauri\src\workspace.rs:167-175
+  The hook server uses the token to authenticate local event posts, but the generator derives it entirely from the launch timestamp and an incrementing counter. The formatted length does not provide the claimed entropy. Use OS-backed randomness so the receiver does not have to rely on the launch time and counter remaining unknown.

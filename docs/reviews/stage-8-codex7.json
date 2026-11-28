@@ -1,0 +1,33 @@
+Mobile pairing is not wired into the desktop UI, and opening a mobile terminal stream can disable desktop output for the rest of the session. The Claude hook setup also deletes its settings too early and generates callback URLs that do not reliably identify the event.
+
+Full review comments:
+
+- [P1] Keep mobile streams separate from the desktop terminal viewer — C:\dev\dhkang\lmux\src-tauri\src\mobile.rs:731-740
+  Opening a mobile stream calls `Sessions::attach`, which replaces the session’s only desktop output sink. The mobile viewer ID also raises `latest_viewer` above the desktop’s timestamp-based IDs, so reopening the desktop pane cannot restore output until the session restarts, even after the mobile stream detaches. Give mobile streams a separate subscription that does not replace or advance the desktop viewer.
+
+- [P1] Wire mobile pairing into the desktop app — C:\dev\dhkang\lmux\src-tauri\src\mobile.rs:594-601
+  The desktop frontend never calls `mobile_start` or requests a pairing QR, and `handle_pair_begin` returns the pairing ID and verification code only to the phone. Even if the server is started and the QR is obtained outside the UI, the desktop receives no request to approve, so the phone stays pending. Add the desktop controls and deliver pending requests to them.
+
+- [P1] Keep Claude’s settings file until the session ends — C:\dev\dhkang\lmux\src-tauri\src\workspace.rs:138-145
+  `session_start` calls `launched` after spawning the PTY, but `launched` now calls `forget`, which deletes the settings file. Spawning the PTY does not mean Claude has read `--settings`; when shell startup or Claude initialization takes longer, the file is already gone. Clear only the one-shot prompt here and remove the settings during session cleanup.
+
+- [P1] Put the configured hook name directly in each callback URL — C:\dev\dhkang\lmux\src-tauri\src\hooks.rs:9-17
+  All hook entries reuse a command that relies on shell expansion for the event name. In WSL the URL is single-quoted, so `${CLAUDE_HOOK_EVENT}` is sent literally; the Windows `%CLAUDE_HOOK_EVENT%` form likewise depends on cmd expansion and a variable this code does not set. The receiver takes the hook name from the URL, so generate each command with its known event name instead.
+
+- [P1] Serve the mobile PWA over HTTPS when certificates are available — C:\dev\dhkang\lmux\src-tauri\src\mobile.rs:448-453
+  The server always uses a plain TCP HTTP listener and reports `tls_ok: false`, even on a Tailscale host with certificate support. A phone visiting that non-local HTTP origin cannot register the service worker, which also prevents Web Push. Configure TLS when available and report HTTP fallback only when TLS setup fails.
+
+- [P2] End active terminal streams when a device is revoked — C:\dev\dhkang\lmux\src-tauri\src\mobile.rs:715-719
+  The stream checks device authorization only at connection time. Removing a device blocks its next request but leaves any existing stream receiving terminal output until the five-minute detach timer fires. Cancel active streams belonging to the revoked device as part of revocation.
+
+- [P2] Reconnect the mobile terminal when its stream closes — C:\dev\dhkang\lmux\src-tauri\src\mobile_pwa.rs:173-179
+  The server detaches every mobile stream after five minutes. The PWA’s authenticated fetch stops reading at EOF and never reconnects; the separate `EventSource` cannot help because browsers ignore its custom `headers` option. A phone left on the terminal page therefore stops showing output until the user reloads it.
+
+- [P2] Generate hook authentication tokens with a secure RNG — C:\dev\dhkang\lmux\src-tauri\src\workspace.rs:168-176
+  The hook receiver uses this token as an authentication secret, but its value is derived entirely from the launch timestamp and a process-local counter. The length test does not establish unpredictability. Use OS-backed random bytes rather than timestamps and sequence numbers.
+
+- [P2] Register the PostToolUse hook for file conflict tracking — C:\dev\dhkang\lmux\src-tauri\src\hooks.rs:20-26
+  The backend extracts changed file paths and detects conflicts on `PostToolUse`, but the generated Claude settings never subscribe to that event. A Claude session launched through the app therefore cannot populate file tracking through the generated hooks.
+
+- [P2] Show agent notifications in the mobile alerts feed — C:\dev\dhkang\lmux\src-tauri\src\mobile.rs:1073-1075
+  `/api/alerts` returns entries from the access log, so the mobile alerts page shows file reads and terminal access instead of agent notifications. Feed the endpoint from agent notification events and keep access auditing on its separate endpoint.

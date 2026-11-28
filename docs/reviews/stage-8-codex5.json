@@ -1,0 +1,33 @@
+Claude hook startup can lose its settings, and the mobile feature lacks a usable desktop pairing flow and can interrupt local terminal output. TypeScript validation also stopped on pre-existing errors in unchanged settings components.
+
+Full review comments:
+
+- [P1] Keep Claude hook settings until the session has loaded them — C:/dev/dhkang/lmux/src-tauri/src/workspace.rs:139-145
+  `session_start` calls `ws.launched` as soon as the PTY starts, but `launched` now calls `forget`, which deletes the JSON file passed to Claude via `--settings`. If Claude has not opened the file yet, such as when the shell is still starting, Claude receives a missing settings path and cannot load its hooks. Separate first-prompt cleanup from hook-file cleanup.
+
+- [P1] Put the registered event name in each hook URL — C:/dev/dhkang/lmux/src-tauri/src/hooks.rs:12-16
+  For WSL sessions, the URL is single-quoted, so `${CLAUDE_HOOK_EVENT}` is sent literally and does not identify a recognized hook. The Windows command also depends on `CLAUDE_HOOK_EVENT` being set, although Claude provides the event name in the hook's JSON input. Each generated command already belongs to a known event, so put that event name directly in its URL.
+
+- [P1] Wire mobile startup and pairing into the desktop UI — C:/dev/dhkang/lmux/src-tauri/src/lib.rs:944-948
+  The new mobile commands have no desktop frontend callers, and the server is not started anywhere else. A desktop user therefore cannot start the listener, display the QR code, or compare the six-digit code and approve a pairing. Connect the desktop workflow before exposing mobile as a usable feature ([mobile requirements](docs/spec.md#L76)).
+
+- [P1] Serve mobile endpoints over HTTPS — C:/dev/dhkang/lmux/src-tauri/src/mobile.rs:524-526
+  The server always uses plain HTTP and sets `tls_ok` to false. A phone opening the generated QR URL on a Tailscale address is therefore not in a browser secure context, so service worker registration and Web Push cannot work. Serve the listener with `tailscale cert` and do not advertise an HTTP pairing URL when TLS setup fails ([mobile requirements](docs/spec.md#L76)).
+
+- [P1] Keep mobile streams from replacing the desktop terminal viewer — C:/dev/dhkang/lmux/src-tauri/src/mobile.rs:720-731
+  A mobile stream uses `Sessions::attach`, which replaces the session's sole viewer, with an ID far above the desktop's timestamp-based sequence. Opening the mobile terminal stops desktop output, and even after the mobile stream detaches, desktop reattachment is rejected because the session retains the higher viewer ID. Give remote streams a separate read-only subscription rather than sharing the desktop viewer slot.
+
+- [P2] Close active terminal streams when a device is revoked — C:/dev/dhkang/lmux/src-tauri/src/mobile.rs:743-756
+  The terminal stream authenticates only when it opens. Revoking a device blocks its next request, but an already-open stream continues delivering live terminal output until the five-minute detach timer fires. Tie active subscriptions to the device so revocation also ends its existing access ([device revocation requirement](docs/spec.md#L76)).
+
+- [P2] Preserve the active instance's hook files on secondary startup — C:/dev/dhkang/lmux/src-tauri/src/workspace.rs:34-37
+  `Store::open` can return a read-only store when another instance owns the data directory, but `Workspace::open` still clears that directory's hook files. Opening a second desktop instance can therefore delete the primary instance's generated settings while it is launching Claude. Restrict startup and exit cleanup to the instance that owns the store.
+
+- [P2] Register PostToolUse for session change tracking — C:/dev/dhkang/lmux/src-tauri/src/hooks.rs:20-26
+  `process_hook_event` uses `PostToolUse` to populate the file tracker, but the generated Claude configuration never subscribes to that event. Once hook delivery works, edits made by Claude will still be absent from session-level change and conflict tracking because that branch will not receive the events it needs.
+
+- [P2] Connect Web Push subscriptions to notification delivery — C:/dev/dhkang/lmux/src-tauri/src/mobile.rs:1059-1069
+  The new endpoint stores subscriptions in memory, but the PWA only registers a service worker and never creates a push subscription. The server also never sends notifications to the stored endpoints. Even after HTTPS is enabled, no paired device will receive the Web Push notifications required by the [mobile spec](docs/spec.md#L76).
+
+- [P2] Persist the device before publishing pairing approval — C:/dev/dhkang/lmux/src-tauri/src/lib.rs:743-753
+  `approve_pair` makes the token visible to the phone before `add_mobile_device` saves its hash. If saving fails, the phone sees a successful pairing and retains a token that every authenticated endpoint rejects. Publish the approved state only after the device record is saved successfully.

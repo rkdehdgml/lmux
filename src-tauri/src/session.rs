@@ -280,6 +280,10 @@ impl Sessions {
         }
     }
 
+    pub fn current_run(&self, id: &str) -> Result<u64, String> {
+        self.with(id, |s| s.run)
+    }
+
     /// 다시 시작하기 전 실행(`run`)에 보낸 늦은 입력은 버린다.
     pub fn write(&self, id: &str, run: u64, viewer: u64, data: Vec<u8>) -> Result<(), String> {
         let (current, shared) = self.with(id, |s| (s.run, s.shared.clone()))?;
@@ -950,7 +954,7 @@ mod tests {
         for name in ["chcp.cmd", "lmuxagent.cmd"] {
             std::fs::write(dir.join(name), "@echo PLANTED-%~n0\r\n").unwrap();
         }
-        let real = command_line(ShellKind::Cmd, Agent::Claude, "", "").unwrap();
+        let real = command_line(ShellKind::Cmd, Agent::Claude, "", "", None).unwrap();
         // 진짜 에이전트는 어떤 경우에도 실행하지 않는다. 앞의 준비 명령만 가져와 심은 이름을 부른다.
         let prefix = real.strip_suffix("claude").expect("에이전트 이름으로 끝남");
         let line = format!("{prefix}lmuxagent & echo agent-^done");

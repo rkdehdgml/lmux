@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-mobile-get-devices"
+description = "Enables the mobile_get_devices command without any pre-configured scope."
+commands.allow = ["mobile_get_devices"]
+
+[[permission]]
+identifier = "deny-mobile-get-devices"
+description = "Denies the mobile_get_devices command without any pre-configured scope."
+commands.deny = ["mobile_get_devices"]

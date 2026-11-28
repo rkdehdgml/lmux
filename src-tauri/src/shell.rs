@@ -92,7 +92,7 @@ pub fn parse_wsl_list(bytes: &[u8]) -> Vec<String> {
 }
 
 /// WSL이 없거나 응답하지 않으면 빈 목록.
-fn wsl_distros() -> Vec<String> {
+pub(crate) fn wsl_distros() -> Vec<String> {
     let mut command = Command::new(system32("wsl.exe"));
     command
         .args(["-l", "-q"])

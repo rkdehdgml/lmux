@@ -6,6 +6,8 @@ mod events;
 mod hook_server;
 mod hooks;
 mod layout;
+mod mobile;
+mod mobile_pwa;
 mod notifications;
 mod ring;
 mod session;
@@ -672,6 +674,138 @@ fn get_last_running(workspace: Shared<'_>) -> Result<Vec<String>, String> {
     }
 }
 
+// ──────────────────────── 모바일 커맨드 ────────────────────────
+
+#[tauri::command(async)]
+fn mobile_start(app_handle: AppHandle, workspace: Shared<'_>) -> Result<mobile::MobileStatus, String> {
+    let _ = workspace; // lock 획득 테스트 (오류 조기 반환)
+    drop(lock(&workspace)?);
+    // 이미 실행 중이면 현재 상태 반환
+    if let Ok(srv) = app_handle.state::<std::sync::Mutex<Option<mobile::MobileServer>>>().lock() {
+        if let Some(ref s) = *srv {
+            return Ok(s.status.clone());
+        }
+    }
+    let srv = mobile::MobileServer::start(app_handle.clone())?;
+    let status = srv.status.clone();
+    if let Ok(mut guard) = app_handle.state::<std::sync::Mutex<Option<mobile::MobileServer>>>().lock() {
+        *guard = Some(srv);
+    }
+    Ok(status)
+}
+
+#[tauri::command]
+fn mobile_status(app_handle: AppHandle) -> mobile::MobileStatus {
+    if let Ok(srv) = app_handle.state::<std::sync::Mutex<Option<mobile::MobileServer>>>().lock() {
+        if let Some(ref s) = *srv {
+            return s.status.clone();
+        }
+    }
+    mobile::MobileStatus {
+        server_running: false,
+        ip: None,
+        port: mobile::MOBILE_PORT,
+        tls_ok: false,
+        hostname: None,
+    }
+}
+
+#[tauri::command]
+fn mobile_qr_info(app_handle: AppHandle) -> Result<mobile::QrInfo, String> {
+    let binding = app_handle.state::<std::sync::Mutex<Option<mobile::MobileServer>>>();
+    let guard = binding
+        .lock()
+        .map_err(|_| "상태 잠금 실패".to_string())?;
+    guard
+        .as_ref()
+        .map(|s| s.qr_info())
+        .ok_or_else(|| "모바일 서버가 실행 중이 아니에요".to_string())
+}
+
+#[tauri::command(async)]
+fn mobile_approve_pairing(
+    app_handle: AppHandle,
+    workspace: Shared<'_>,
+    pair_id: String,
+) -> Result<(), String> {
+    let binding = app_handle.state::<std::sync::Mutex<Option<mobile::MobileServer>>>();
+    let guard = binding
+        .lock()
+        .map_err(|_| "상태 잠금 실패".to_string())?;
+    let srv = guard
+        .as_ref()
+        .ok_or_else(|| "모바일 서버가 실행 중이 아니에요".to_string())?;
+
+    let device_name = srv
+        .pairing
+        .pair_device_name(&pair_id)
+        .unwrap_or_else(|| "모바일 기기".to_string());
+
+    // 디스크 저장 전에 토큰만 생성 — 저장 실패 시 phone에 노출 안 함
+    let token = srv
+        .pairing
+        .stage_pair_token(&pair_id)
+        .ok_or_else(|| "페어링 세션 없음".to_string())?;
+
+    let token_hash = mobile::hash_token(&token);
+    lock(&workspace)?.store.add_mobile_device(
+        &device_name,
+        &token_hash,
+        store::MobilePermission::View,
+    )?;
+
+    // 디스크 저장 성공 후에 phone이 조회 가능하도록 커밋
+    srv.pairing.commit_pair_token(&pair_id, token);
+    Ok(())
+}
+
+#[tauri::command(async)]
+fn mobile_reject_pairing(app_handle: AppHandle, pair_id: String) -> Result<(), String> {
+    let binding = app_handle.state::<std::sync::Mutex<Option<mobile::MobileServer>>>();
+    let guard = binding
+        .lock()
+        .map_err(|_| "상태 잠금 실패".to_string())?;
+    let srv = guard
+        .as_ref()
+        .ok_or_else(|| "모바일 서버가 실행 중이 아니에요".to_string())?;
+    srv.pairing.reject_pair(&pair_id);
+    Ok(())
+}
+
+#[tauri::command(async)]
+fn mobile_revoke_device(workspace: Shared<'_>, device_id: String) -> Result<(), String> {
+    lock(&workspace)?.store.revoke_mobile_device(&device_id)
+}
+
+#[tauri::command(async)]
+fn mobile_set_permission(
+    workspace: Shared<'_>,
+    device_id: String,
+    permission: store::MobilePermission,
+) -> Result<(), String> {
+    lock(&workspace)?
+        .store
+        .set_mobile_permission(&device_id, permission)
+}
+
+#[tauri::command(async)]
+fn mobile_get_devices(workspace: Shared<'_>) -> Result<Vec<store::MobileDevice>, String> {
+    Ok(lock(&workspace)?.store.state().mobile_devices.clone())
+}
+
+#[tauri::command]
+fn mobile_access_log(app_handle: AppHandle) -> Vec<mobile::AccessEntry> {
+    if let Ok(guard) = app_handle
+        .state::<std::sync::Mutex<Option<mobile::MobileServer>>>()
+        .lock()
+    {
+        if let Some(ref s) = *guard {
+            return s.logger.recent(100);
+        }
+    }
+    Vec::new()
+}
+
 pub fn run() {
     windows::restrict_dll_search();
     tauri::Builder::default()
@@ -681,6 +815,7 @@ pub fn run() {
         .manage(Arc::new(HookStates::default()))
         .manage(Arc::new(FileTracker::default()))
         .manage(Mutex::new(AccountRegistry::new()))
+        .manage(Mutex::new(Option::<mobile::MobileServer>::None))
         .setup(|app| {
             // LMUX_DATA_DIR은 확인 스크립트가 실제 데이터와 분리할 때 쓴다.
             let dir = match std::env::var_os("LMUX_DATA_DIR") {
@@ -811,6 +946,15 @@ pub fn run() {
             prevent_sleep,
             update_last_running,
             get_last_running,
+            mobile_start,
+            mobile_status,
+            mobile_qr_info,
+            mobile_approve_pairing,
+            mobile_reject_pairing,
+            mobile_revoke_device,
+            mobile_set_permission,
+            mobile_get_devices,
+            mobile_access_log,
         ])
         .on_window_event(|win, ev| {
             if let tauri::WindowEvent::CloseRequested { api, .. } = ev {

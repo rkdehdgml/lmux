@@ -1,0 +1,45 @@
+Claude can lose its hook settings during startup, and the generated hook commands do not reliably identify events. The mobile flow is not reachable from the desktop UI, serves only HTTP, and its terminal stream can displace the desktop viewer.
+
+Full review comments:
+
+- [P1] Keep Claude’s hook settings file through startup — C:/dev/dhkang/lmux/src-tauri/src/workspace.rs:139-145
+  `session_start` calls `launched` after starting the PTY, but that method now calls `forget`, which deletes the file passed to Claude via `--settings`. The PTY starting does not mean Claude has opened the file, so an ordinary launch can lose all hook configuration. Clear the one-shot prompt separately and retain the file until the run ends or the session is removed. See [docs/spec.md:49](docs/spec.md#L49).
+
+- [P1] Put the registered event name in each hook URL — C:/dev/dhkang/lmux/src-tauri/src/hooks.rs:27-33
+  The same command is serialized for every event, although the receiver uses the final URL segment to select the event parser. The WSL command single-quotes `${CLAUDE_HOOK_EVENT}`, so it is sent literally; the Windows command depends on `%CLAUDE_HOOK_EVENT%` being set. Build each command with its configured event name so real Claude hooks reach the state and approval handlers. See [docs/spec.md:49](docs/spec.md#L49).
+
+- [P1] Wire mobile pairing into the desktop app — C:/dev/dhkang/lmux/src-tauri/src/mobile.rs:576-584
+  The commands are registered, but the desktop frontend never starts the server or requests a QR code, and `/pair/begin` does not notify the desktop of the pending request or its six-digit code. In the shipped app a user cannot start pairing or approve it after comparing codes. Connect the desktop controls and pending-request notification required by [docs/spec.md:76](docs/spec.md#L76).
+
+- [P1] Serve the mobile PWA over HTTPS — C:/dev/dhkang/lmux/src-tauri/src/mobile.rs:515-517
+  The listener serves only HTTP and startup always sets `tls_ok` to false, so the generated QR opens an insecure origin even on a correctly configured Tailscale host. Mobile browsers cannot register the service worker on that origin, and pairing and authenticated requests are not protected by the required HTTPS layer. Load and serve the Tailscale certificate as specified in [docs/spec.md:76](docs/spec.md#L76).
+
+- [P1] Keep mobile streams out of the desktop viewer slot — C:/dev/dhkang/lmux/src-tauri/src/mobile.rs:711-722
+  `Sessions::attach` replaces the current viewer and rejects IDs below its `latest_viewer` watermark. Opening a mobile stream with this high-bit ID therefore disconnects the desktop terminal, and desktop reattachment remains blocked for that run even after the mobile viewer detaches. Use a separate subscription for mobile output so remote viewing does not take over the desktop terminal.
+
+- [P2] Register PostToolUse for file conflict tracking — C:/dev/dhkang/lmux/src-tauri/src/hooks.rs:20-26
+  `process_hook_event` records modified files only for `PostToolUse`, but generated Claude settings never subscribe to that event. Even after the hook transport works, two Claude sessions editing the same file will not populate the tracker or trigger the required warning. See [docs/spec.md:52](docs/spec.md#L52).
+
+- [P2] Populate context usage before rendering the sidebar meter — C:/dev/dhkang/lmux/src/Sidebar.tsx:104-107
+  The new meter requires `hook.context`, but production hook processing never calls `from_transcript` or populates the context field. As a result, no Claude session can display usage in the new sidebar meter. Connect the usage calculation to hook processing so the UI receives the data required by [docs/spec.md:50](docs/spec.md#L50).
+
+- [P2] Let the exited state override the last hook status — C:/dev/dhkang/lmux/src/Sidebar.tsx:74-81
+  The sidebar always prefers the last hook status over the process state. If Claude is killed or crashes without sending `SessionEnd`, a terminated run can still appear to be working or waiting for approval. Only use hook status for the matching active run, and fall back to the PTY status after exit.
+
+- [P2] Close active terminal streams when a device is revoked — C:/dev/dhkang/lmux/src-tauri/src/mobile.rs:743-748
+  The stream authenticates only at connection time. Revoking a device removes its stored credential, but an already-open response can continue delivering terminal output until the five-minute detach timer expires. Tie active subscriptions to the device and cancel them on revocation so the access removal required by [docs/spec.md:76](docs/spec.md#L76) takes effect immediately.
+
+- [P2] Reject pairing approvals that are no longer pending — C:/dev/dhkang/lmux/src-tauri/src/mobile.rs:218-225
+  `approve_pair` issues a new credential for any entry still in the map. A delayed approval can therefore revive an expired or rejected request, and duplicate approvals before the phone polls can persist multiple device records. Check expiry and enforce the pending-to-approved transition under the pairing lock.
+
+- [P2] Reject mobile input addressed to a stale run — C:/dev/dhkang/lmux/src-tauri/src/mobile.rs:789-792
+  The terminal page fetches its run number once. If the session restarts while the page stays open, `Sessions::write` silently ignores the stale run and returns `Ok(())`; the mobile endpoint then reports success and the page clears text that never reached the PTY. Return a stale-run error so the page can retain the input and refresh its session metadata.
+
+- [P2] Generate hook credentials with a secure random source — C:/dev/dhkang/lmux/src-tauri/src/workspace.rs:167-176
+  The hook token encodes wall-clock seconds, subseconds, and a sequential counter. Twenty hex characters do not provide 80 bits of unpredictability here, and the token is the listener’s authentication check before accepting events that affect session state. Generate it from a cryptographically secure random source rather than launch timing.
+
+- [P2] Enforce sensitive-path filtering on direct file requests — C:/dev/dhkang/lmux/src-tauri/src/mobile.rs:959-969
+  Directory listings hide names matched by `is_sensitive_file`, but direct directory requests do not apply that filter and content requests check only the final basename. A paired device can still browse a hidden sensitive directory and open files with ordinary names beneath it. Apply the sensitive-file policy to every project-relative component of the resolved path, consistent with [docs/spec.md:76](docs/spec.md#L76).
+
+- [P2] Deliver Web Push notifications to registered devices — C:/dev/dhkang/lmux/src-tauri/src/mobile.rs:1034-1041
+  The push endpoint stores subscription details, but no session event sends a push to those subscriptions, and the PWA never creates one. A paired phone therefore receives no background notification even when Claude is waiting for approval. Wire subscription and delivery to the session notification path, with the content-free default required by [docs/spec.md:76](docs/spec.md#L76).

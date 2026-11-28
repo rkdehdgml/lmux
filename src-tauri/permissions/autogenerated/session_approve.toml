@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-session-approve"
+description = "Enables the session_approve command without any pre-configured scope."
+commands.allow = ["session_approve"]
+
+[[permission]]
+identifier = "deny-session-approve"
+description = "Denies the session_approve command without any pre-configured scope."
+commands.deny = ["session_approve"]

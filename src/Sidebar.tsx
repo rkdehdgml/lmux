@@ -1,12 +1,22 @@
-import type { PointerEvent } from "react";
+import type { CSSProperties, PointerEvent } from "react";
 import type { Project, SessionRecord, Shell, StoredState } from "./api";
 import { CloseIcon, FolderIcon, PlusIcon } from "./icons";
 import { KindBadge } from "./KindBadge";
-import { groupByProject, type RunState, sessionStatus, statusText } from "./model";
+import {
+  contextColor,
+  contextPercent,
+  groupByProject,
+  hookStatusText,
+  type RunState,
+  type SessionHookState,
+  sessionStatus,
+  statusText,
+} from "./model";
 
 type Props = {
   state: StoredState;
   runs: Record<string, RunState>;
+  hooks: Record<string, SessionHookState>;
   shells: Shell[];
   /** 초점 패널의 세션. */
   selected?: string;
@@ -29,7 +39,7 @@ export function shellName(shells: Shell[], id: string) {
 }
 
 export function Sidebar(props: Props) {
-  const { state, runs, shells, selected, visible } = props;
+  const { state, runs, hooks, shells, selected, visible } = props;
   return (
     <aside className="sidebar" aria-label="프로젝트와 세션">
       <div className="side-head">
@@ -62,7 +72,13 @@ export function Sidebar(props: Props) {
             </div>
             {sessions.map((session) => {
               const status = sessionStatus(runs[session.id]);
+              const hook = hooks[session.id];
+              const live = hook?.live;
+              const ctx = hook?.context;
+              const pct = ctx ? contextPercent(ctx) : undefined;
+              const dotClass = live ? live.type : status;
               const shown = visible.includes(session.id);
+              const subText = hookStatusText(live) ?? statusText(runs[session.id]);
               return (
                 <button
                   key={session.id}
@@ -71,7 +87,7 @@ export function Sidebar(props: Props) {
                   onClick={() => props.onSelect(session)}
                   onPointerDown={props.onDragStart(session.id)}
                 >
-                  <span className={`dot ${status}`} />
+                  <span className={`dot ${dotClass}`} />
                   <span className="sess-text">
                     <span className="sess-name">{session.name}</span>
                     <span className="sess-sub muted">
@@ -79,12 +95,23 @@ export function Sidebar(props: Props) {
                         "끌어서 패널에 놓기"
                       ) : (
                         <>
-                          {statusText(runs[session.id])} ·{" "}
+                          {subText} ·{" "}
                           {props.places[session.id] ??
                             (status === "running" && !shown ? "숨김" : shellName(shells, session.shell))}
                         </>
                       )}
                     </span>
+                    {ctx !== undefined && pct !== undefined && (
+                      <span className="sess-ctx">
+                        <span
+                          className={`ctx-bar ctx-${contextColor(pct)}`}
+                          style={{ "--pct": `${pct}%` } as CSSProperties}
+                        />
+                        <span className={`ctx-pct ctx-${contextColor(pct)}`}>
+                          {pct}%{ctx.estimated && " 추정"}
+                        </span>
+                      </span>
+                    )}
                   </span>
                 </button>
               );

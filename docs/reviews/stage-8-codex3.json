@@ -1,0 +1,39 @@
+Claude hook settings can be deleted before Claude reads them, and the generated callbacks do not reliably identify their events. Mobile pairing cannot be completed from the desktop UI, and a mobile terminal connection can prevent the desktop from reattaching to the same session.
+
+Full review comments:
+
+- [P1] Keep Claude hook settings until the session ends — C:/dev/dhkang/lmux/src-tauri/src/workspace.rs:139-145
+  `session_start` queues the Claude startup command and then calls `Workspace::launched`. That method calls `forget`, which now deletes the file passed to `claude --settings`. If Claude has not opened the file yet, it starts with a missing settings path and cannot load the hooks. Clear the one-time prompt after launch, but retain the settings until session cleanup.
+
+- [P1] Put each hook's actual event name in its callback URL — C:/dev/dhkang/lmux/src-tauri/src/hooks.rs:27-33
+  All generated hooks reuse a URL containing a shell placeholder. In the WSL command the placeholder is single-quoted and therefore sent literally; the receiver passes that URL segment to `events::parse`, which accepts only concrete event names. Build the URL from `e` inside the per-event mapping so prompt, approval, and completion callbacks reach the correct handlers without depending on shell expansion.
+
+- [P1] Connect mobile pairing to the desktop approval flow — C:/dev/dhkang/lmux/src-tauri/src/mobile.rs:576-584
+  `handle_pair_begin` returns the pair ID and comparison code only to the phone. It does not emit a desktop event, and the desktop UI has no mobile setup or approval flow: nothing starts the server, displays the QR code, or passes the pending ID to `mobile_approve_pairing`. A user cannot complete pairing through the app.
+
+- [P1] Keep mobile streams out of the desktop viewer slot — C:/dev/dhkang/lmux/src-tauri/src/mobile.rs:711-723
+  `Sessions::attach` replaces the active desktop viewer and records the new ID as its `latest_viewer`. A mobile stream supplies a random ID far above the desktop's `Date.now()`-based sequence, so opening a terminal on the phone disconnects the desktop and causes later desktop attaches to be rejected even after the mobile stream detaches. Use a separate output subscription for mobile viewers.
+
+- [P1] Serve the mobile PWA over a secure origin — C:/dev/dhkang/lmux/src-tauri/src/mobile.rs:430-437
+  The server always reports `tls_ok: false` and generates an HTTP pairing URL. Mobile browsers do not allow service workers on a plain HTTP Tailscale IP, so the registration calls fail and the PWA cannot receive push notifications. Tailscale transport encryption does not make the HTTP page a browser secure context.
+
+- [P2] Apply backpressure to mobile terminal output — C:/dev/dhkang/lmux/src-tauri/src/mobile.rs:729-737
+  The SSE sink returns success after writing into an unbounded channel but never calls `Sessions::ack`. A noisy session eventually exceeds `MAX_UNACKED`, and the session drops the mobile viewer even if the phone is consuming output promptly. Tie acknowledgments to consumption through a bounded subscription rather than acknowledging when data is merely queued.
+
+- [P2] End active terminal streams when a device is revoked — C:/dev/dhkang/lmux/src-tauri/src/mobile.rs:694-702
+  The stream authenticates once when it opens. Removing the device blocks new requests but does not stop an existing response from receiving new terminal output until it disconnects or the five-minute timeout expires. Associate active streams with the authenticated device and close them on revocation.
+
+- [P2] Register the PostToolUse hook for file tracking — C:/dev/dhkang/lmux/src-tauri/src/hooks.rs:20-26
+  `process_hook_event` records edited paths only for `PostToolUse`, but the generated Claude settings do not register that event. Even after callback delivery works, normal Claude edits will not reach `FileTracker`, so file-overlap warnings will miss those edits.
+
+- [P2] Generate hook authentication tokens with a secure RNG — C:/dev/dhkang/lmux/src-tauri/src/workspace.rs:168-176
+  The hook receiver treats this token as authentication, but its value consists entirely of a timestamp and a process-local counter. Twenty hex characters do not provide 80 bits of unpredictability when the fields are predictable. Generate the token with an OS-backed cryptographic RNG.
+
+- [P2] Set up both ends of Web Push delivery — C:/dev/dhkang/lmux/src-tauri/src/mobile.rs:1028-1041
+  The subscription endpoint stores caller-supplied subscriptions and returns success, but no PWA page creates or submits a subscription and no backend code sends a push message. Even on HTTPS, the service worker's push handler will never receive a notification from this app.
+
+- [P2] Prefer process exit status over stale sidebar hook state — C:/dev/dhkang/lmux/src/Sidebar.tsx:74-81
+  `App.tsx` records process exits separately and does not clear hooks on exit. If Claude is killed or crashes without sending a final hook, the sidebar continues to display the last hook state, such as working or awaiting approval, instead of the recorded exit. Use hook status only when it belongs to the currently running process.
+
+- [P2] Report failed mobile terminal input without discarding it — C:/dev/dhkang/lmux/src-tauri/src/mobile_pwa.rs:194-200
+  The PWA clears the input before sending it and ignores the response. Newly paired devices default to view-only, so submitting text returns `403` and silently loses the command; stale runs and disconnected sessions have the same UX. Disable input when the device lacks permission, and preserve the text and show an error if a send fails.

@@ -1,13 +1,15 @@
 //! 저장한 기록으로 세션을 어떻게 띄울지 정한다.
 
 use crate::agent::{Agent, command_line};
+use crate::hooks;
 use crate::shell;
 use crate::store::{SessionRecord, Store};
 use std::collections::HashMap;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 /// cmd의 명령 줄 한도(8191자) 안에 들어가는 길이.
 const MAX_PROMPT: usize = 4000;
+
 #[derive(Debug)]
 pub struct Launch {
     pub shell: String,
@@ -21,15 +23,24 @@ pub struct Workspace {
     pub warning: Option<String>,
     /// 아직 시작하지 않은 세션의 첫 지시. 저장하지 않는다.
     prompts: HashMap<String, String>,
+    /// 훅 설정 파일을 보관하는 디렉터리.
+    pub hooks_dir: PathBuf,
+    /// 세션별 훅 토큰. HookServer에 등록된 것과 일치해야 한다.
+    tokens: HashMap<String, String>,
 }
 
 impl Workspace {
     pub fn open(dir: &Path) -> Workspace {
         let (store, warning) = Store::open(dir);
+        let hooks_dir = dir.join("hooks");
+        // 이전 실행에서 남은 설정 파일을 정리한다.
+        hooks::remove_all(&hooks_dir);
         Workspace {
             store,
             warning,
             prompts: HashMap::new(),
+            hooks_dir,
+            tokens: HashMap::new(),
         }
     }
 
@@ -72,6 +83,19 @@ impl Workspace {
             .find(|p| p.id == session.project_id)
             .ok_or("프로젝트가 없어요")?;
         let prompt = self.prompts.get(id).map_or("", String::as_str);
+        let is_wsl = session.shell.starts_with("wsl:");
+        let settings_path = self.tokens.get(id).map(|_| {
+            let win = self
+                .hooks_dir
+                .join(format!("{id}.json"))
+                .to_string_lossy()
+                .into_owned();
+            if is_wsl {
+                windows_to_wsl_path(&win)
+            } else {
+                win
+            }
+        });
         Ok(Launch {
             shell: session.shell.clone(),
             cwd: project.path.clone(),
@@ -80,8 +104,35 @@ impl Workspace {
                 session.agent,
                 &session.custom_command,
                 prompt,
+                settings_path.as_deref(),
             ),
         })
+    }
+
+    /// Claude 세션의 훅 설정 파일을 만들고 토큰을 반환한다.
+    /// 반환값: (settings 파일 경로, 토큰)
+    pub fn write_hook_settings(
+        &mut self,
+        session_id: &str,
+        port: u16,
+        is_wsl: bool,
+    ) -> std::io::Result<(PathBuf, String)> {
+        let token = generate_token();
+        hooks::write(&self.hooks_dir, session_id, port, &token, is_wsl)?;
+        self.tokens.insert(session_id.to_string(), token.clone());
+        Ok((self.hooks_dir.join(format!("{session_id}.json")), token))
+    }
+
+    /// 훅 설정 파일과 토큰을 삭제한다.
+    pub fn remove_hook_settings(&mut self, session_id: &str) {
+        self.tokens.remove(session_id);
+        hooks::remove(&self.hooks_dir, session_id);
+    }
+
+    /// 앱 종료 시 모든 훅 설정 파일을 삭제한다.
+    pub fn remove_all_hook_settings(&mut self) {
+        self.tokens.clear();
+        hooks::remove_all(&self.hooks_dir);
     }
 
     /// 셸을 띄웠으면 첫 지시를 버린다. 다시 시작할 때는 에이전트만 실행한다.
@@ -91,7 +142,38 @@ impl Workspace {
 
     pub fn forget(&mut self, id: &str) {
         self.prompts.remove(id);
+        self.remove_hook_settings(id);
     }
+}
+
+/// Windows 절대 경로를 WSL의 POSIX 마운트 경로로 변환한다.
+/// `C:\Users\foo` → `/mnt/c/Users/foo`. 인식할 수 없는 형식이면 원본을 그대로 돌려준다.
+fn windows_to_wsl_path(win_path: &str) -> String {
+    let p = win_path.replace('\\', "/");
+    if p.len() >= 3 {
+        let drive = p.chars().next().unwrap().to_ascii_lowercase();
+        if drive.is_ascii_alphabetic()
+            && p.chars().nth(1) == Some(':')
+            && p.chars().nth(2) == Some('/')
+        {
+            return format!("/mnt/{}/{}", drive, &p[3..]);
+        }
+    }
+    win_path.to_string()
+}
+
+/// 세션별로 유일한 훅 토큰을 생성한다.
+/// 형식: 초(8) + 나노초(8) + 카운터(4) = 20 hex 문자 (~80비트 예측 불가).
+fn generate_token() -> String {
+    use std::time::{SystemTime, UNIX_EPOCH};
+    let dur = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or_default();
+    let secs = dur.as_secs();
+    let nanos = dur.subsec_nanos();
+    static COUNTER: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
+    let seq = COUNTER.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+    format!("{secs:08x}{nanos:08x}{seq:04x}")
 }
 
 #[cfg(test)]
@@ -184,6 +266,111 @@ mod tests {
         );
         assert!(ws.store.state().sessions.is_empty());
         assert!(ws.launch("s999").is_err());
+        let _ = std::fs::remove_dir_all(dir);
+    }
+
+    #[test]
+    fn hook_settings_created_and_deleted_with_session() {
+        let (mut ws, project, dir) = workspace("hook-lifecycle");
+        let session = ws
+            .create_session(&project, "n", "powershell", Agent::Claude, "", "")
+            .unwrap();
+
+        // 토큰 등록 전에는 --settings 없음
+        let before = ws.launch(&session.id).unwrap();
+        assert!(
+            !before
+                .startup
+                .as_deref()
+                .unwrap_or("")
+                .contains("--settings"),
+            "before: {:?}",
+            before.startup
+        );
+
+        // 토큰 등록 후: 파일 생성 + --settings 추가됨
+        let (path, _) = ws.write_hook_settings(&session.id, 9900, false).unwrap();
+        assert!(path.exists(), "settings file must exist");
+        let after = ws.launch(&session.id).unwrap();
+        assert!(
+            after
+                .startup
+                .as_deref()
+                .unwrap_or("")
+                .contains("--settings"),
+            "after: {:?}",
+            after.startup
+        );
+
+        // forget() 호출 시 파일 삭제
+        ws.forget(&session.id);
+        assert!(!path.exists(), "settings file must be deleted after forget");
+
+        let _ = std::fs::remove_dir_all(dir);
+    }
+
+    #[test]
+    fn hook_settings_deleted_on_app_exit() {
+        let (mut ws, project, dir) = workspace("hook-exit");
+        let session = ws
+            .create_session(&project, "n", "powershell", Agent::Claude, "", "")
+            .unwrap();
+        let (path, _) = ws.write_hook_settings(&session.id, 9901, false).unwrap();
+        assert!(path.exists());
+
+        ws.remove_all_hook_settings();
+        assert!(!path.exists(), "settings file must be deleted on exit");
+
+        let _ = std::fs::remove_dir_all(dir);
+    }
+
+    #[test]
+    fn startup_includes_settings_in_launch() {
+        let (mut ws, project, dir) = workspace("hook-startup");
+        let session = ws
+            .create_session(&project, "n", "gitbash", Agent::Claude, "", "fix it")
+            .unwrap();
+        ws.write_hook_settings(&session.id, 9902, false).unwrap();
+
+        let launch = ws.launch(&session.id).unwrap();
+        let startup = launch.startup.unwrap();
+        assert!(startup.contains("--settings"), "startup: {startup}");
+        assert!(startup.contains("fix it"), "startup: {startup}");
+
+        let _ = std::fs::remove_dir_all(dir);
+    }
+
+    #[test]
+    fn token_has_sufficient_length_for_entropy() {
+        // 20 hex chars (secs + subsec_nanos + counter) — fails with the old 12-char format
+        for _ in 0..5 {
+            let token = generate_token();
+            assert!(
+                token.len() >= 20,
+                "token too short for adequate entropy: {token} (len {})",
+                token.len()
+            );
+        }
+    }
+
+    #[test]
+    fn wsl_session_gets_posix_settings_path() {
+        let (mut ws, project, dir) = workspace("wsl-settings");
+        let session = ws
+            .create_session(&project, "n", "wsl:Ubuntu", Agent::Claude, "", "")
+            .unwrap();
+        ws.write_hook_settings(&session.id, 9903, true).unwrap();
+        let launch = ws.launch(&session.id).unwrap();
+        let startup = launch.startup.unwrap();
+        // WSL session must get a POSIX /mnt/... path, not a Windows backslash path
+        assert!(
+            !startup.contains('\\'),
+            "WSL settings path must not contain backslashes: {startup}"
+        );
+        assert!(
+            startup.contains("/mnt/"),
+            "WSL settings path must be POSIX /mnt/ path: {startup}"
+        );
         let _ = std::fs::remove_dir_all(dir);
     }
 }
