@@ -709,6 +709,45 @@ pub fn run() {
                 }
             });
 
+            // 시스템 트레이 아이콘
+            use tauri::menu::{MenuBuilder, MenuItemBuilder, PredefinedMenuItem};
+            use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
+            let menu = MenuBuilder::new(app)
+                .item(&MenuItemBuilder::with_id("open", "Lmux 열기").build(app)?)
+                .item(&PredefinedMenuItem::separator(app)?)
+                .item(&MenuItemBuilder::with_id("quit", "종료").build(app)?)
+                .build()?;
+            TrayIconBuilder::new()
+                .tooltip("Lmux")
+                .icon(app.default_window_icon().cloned().unwrap())
+                .menu(&menu)
+                .show_menu_on_left_click(false)
+                .on_menu_event(|app, event| match event.id().as_ref() {
+                    "open" => {
+                        if let Some(w) = app.get_webview_window("main") {
+                            let _ = w.show();
+                            let _ = w.set_focus();
+                        }
+                    }
+                    "quit" => app.exit(0),
+                    _ => {}
+                })
+                .on_tray_icon_event(|icon, event| {
+                    if let TrayIconEvent::Click {
+                        button: MouseButton::Left,
+                        button_state: MouseButtonState::Up,
+                        ..
+                    } = event
+                    {
+                        let app = icon.app_handle();
+                        if let Some(w) = app.get_webview_window("main") {
+                            let _ = w.show();
+                            let _ = w.set_focus();
+                        }
+                    }
+                })
+                .build(app)?;
+
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -745,6 +784,21 @@ pub fn run() {
             prevent_sleep,
             update_last_running,
         ])
+        .on_window_event(|win, ev| {
+            if let tauri::WindowEvent::CloseRequested { api, .. } = ev {
+                let minimize = win
+                    .app_handle()
+                    .state::<Mutex<Workspace>>()
+                    .lock()
+                    .ok()
+                    .map(|ws| ws.store.state().settings.minimize_to_tray)
+                    .unwrap_or(true);
+                if minimize {
+                    api.prevent_close();
+                    let _ = win.hide();
+                }
+            }
+        })
         .build(tauri::generate_context!())
         .expect("error while building tauri application")
         .run(|app, event| {

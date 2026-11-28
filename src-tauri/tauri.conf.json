@@ -11,6 +11,11 @@
     "frontendDist": "../dist"
   },
   "app": {
+    "trayIcon": {
+      "iconPath": "icons/32x32.png",
+      "iconAsTemplate": false,
+      "tooltip": "Lmux"
+    },
     "windows": [
       {
         "label": "main",
