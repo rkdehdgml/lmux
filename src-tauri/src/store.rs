@@ -59,6 +59,59 @@ pub struct SessionRecord {
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 #[serde(rename_all = "camelCase")]
+pub struct Settings {
+    // 알림
+    pub notify_waiting: bool,
+    pub notify_done: bool,
+    pub notify_error: bool,
+    pub notify_conflict: bool,
+    pub notify_context: bool,
+    pub notify_context_threshold: u8,
+    // 화면
+    pub theme: String,
+    pub language: String,
+    pub density: String,
+    pub terminal_font: String,
+    pub terminal_font_size: u8,
+    pub terminal_line_height: f32,
+    pub cursor_shape: String,
+    // 성능
+    pub webgl: bool,
+    pub hide_inactive: bool,
+    pub scrollback_lines: u32,
+    pub prevent_sleep: bool,
+    pub minimize_to_tray: bool,
+    pub restore_sessions: bool,
+}
+
+impl Default for Settings {
+    fn default() -> Self {
+        Settings {
+            notify_waiting: true,
+            notify_done: true,
+            notify_error: true,
+            notify_conflict: true,
+            notify_context: true,
+            notify_context_threshold: 80,
+            theme: "dark".into(),
+            language: "ko".into(),
+            density: "normal".into(),
+            terminal_font: "JetBrains Mono".into(),
+            terminal_font_size: 13,
+            terminal_line_height: 1.6,
+            cursor_shape: "block".into(),
+            webgl: true,
+            hide_inactive: true,
+            scrollback_lines: 10000,
+            prevent_sleep: true,
+            minimize_to_tray: true,
+            restore_sessions: true,
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct State {
     pub version: u32,
     pub next_id: u64,
@@ -69,6 +122,10 @@ pub struct State {
     pub layout: Option<Node>,
     #[serde(default)]
     pub saved_layouts: Vec<SavedLayout>,
+    #[serde(default)]
+    pub settings: Settings,
+    #[serde(default)]
+    pub last_running: Vec<String>,
 }
 
 impl Default for State {
@@ -80,6 +137,8 @@ impl Default for State {
             sessions: Vec::new(),
             layout: None,
             saved_layouts: Vec::new(),
+            settings: Settings::default(),
+            last_running: Vec::new(),
         }
     }
 }
@@ -492,6 +551,20 @@ impl Store {
             Ok(())
         })
     }
+
+    pub fn set_settings(&mut self, settings: Settings) -> Result<(), String> {
+        self.change(|state| {
+            state.settings = settings;
+            Ok(())
+        })
+    }
+
+    pub fn update_last_running(&mut self, ids: Vec<String>) -> Result<(), String> {
+        self.change(|state| {
+            state.last_running = ids;
+            Ok(())
+        })
+    }
 }
 
 /// 같은 폴더인지 비교하는 값. 연결(junction)은 따라가고 대소문자는 디스크에 있는 대로 맞춘다.
@@ -509,6 +582,34 @@ fn next_id(state: &mut State, prefix: &str) -> String {
 mod tests {
     use super::*;
     use crate::layout::Dir;
+
+    #[test]
+    fn settings_default_values_are_sane() {
+        let s = Settings::default();
+        assert_eq!(s.theme, "dark");
+        assert!(s.notify_waiting);
+        assert!(s.prevent_sleep);
+        assert_eq!(s.terminal_font_size, 13);
+        assert_eq!(s.scrollback_lines, 10000);
+    }
+
+    #[test]
+    fn settings_roundtrip_json() {
+        let s = Settings::default();
+        let json = serde_json::to_string(&s).unwrap();
+        let back: Settings = serde_json::from_str(&json).unwrap();
+        assert_eq!(back.theme, s.theme);
+        assert_eq!(back.terminal_font_size, s.terminal_font_size);
+    }
+
+    #[test]
+    fn last_running_persists_in_state() {
+        let mut s = State::default();
+        s.last_running = vec!["s1".to_string()];
+        let json = serde_json::to_string(&s).unwrap();
+        let back: State = serde_json::from_str(&json).unwrap();
+        assert_eq!(back.last_running, vec!["s1"]);
+    }
 
     /// 테스트마다 새 폴더를 쓰고 끝나면 지운다.
     struct Temp(PathBuf);

@@ -642,6 +642,35 @@ async fn git_worktree_remove_cmd(
         .map_err(|e| e.to_string())
 }
 
+#[tauri::command(async)]
+fn get_settings(workspace: Shared<'_>) -> Result<store::Settings, String> {
+    Ok(lock(&workspace)?.store.state().settings.clone())
+}
+
+#[tauri::command(async)]
+fn save_settings(workspace: Shared<'_>, settings: store::Settings) -> Result<(), String> {
+    lock(&workspace)?.store.set_settings(settings)
+}
+
+#[tauri::command]
+fn prevent_sleep(enable: bool) {
+    use windows_sys::Win32::System::Power::{
+        SetThreadExecutionState, ES_CONTINUOUS, ES_DISPLAY_REQUIRED, ES_SYSTEM_REQUIRED,
+    };
+    unsafe {
+        if enable {
+            SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_DISPLAY_REQUIRED);
+        } else {
+            SetThreadExecutionState(ES_CONTINUOUS);
+        }
+    }
+}
+
+#[tauri::command(async)]
+fn update_last_running(workspace: Shared<'_>, ids: Vec<String>) -> Result<(), String> {
+    lock(&workspace)?.store.update_last_running(ids)
+}
+
 pub fn run() {
     windows::restrict_dll_search();
     tauri::Builder::default()
@@ -711,6 +740,10 @@ pub fn run() {
             git_worktree_list_cmd,
             git_worktree_add_cmd,
             git_worktree_remove_cmd,
+            get_settings,
+            save_settings,
+            prevent_sleep,
+            update_last_running,
         ])
         .build(tauri::generate_context!())
         .expect("error while building tauri application")
@@ -722,6 +755,15 @@ pub fn run() {
                 }
             }
         });
+}
+
+fn any_session_working(states: &HookStates) -> bool {
+    states
+        .states
+        .lock()
+        .unwrap()
+        .values()
+        .any(|e| matches!(e.live, Some(Live::Working)))
 }
 
 /// 훅 이벤트를 받아 세션 상태를 갱신하고 Tauri 이벤트를 발행한다.
@@ -774,7 +816,20 @@ fn process_hook_event(
         .map(|l| notifications::notification_title(&entry.name, l));
     entry.live = next_live;
 
+    // 절전 방지: Working 전이 시 활성화, 모든 세션이 Done일 때 해제
+    let now_working = matches!(entry.live, Some(Live::Working));
+    drop(guard);
+    if now_working {
+        prevent_sleep(true);
+    } else if !any_session_working(states) {
+        prevent_sleep(false);
+    }
+
     // 컨텍스트는 Stop 이벤트에서 transcript를 읽어 갱신 (추후 구현; 현재는 유지)
+    let guard = states.states.lock().unwrap();
+    let Some(entry) = guard.get(&ev.session) else {
+        return;
+    };
     let payload = SessionStatePayload {
         id: ev.session.clone(),
         run: entry.run,
