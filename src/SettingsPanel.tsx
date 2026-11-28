@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { api, type AppSettings, DEFAULT_SETTINGS } from "./api";
 import SetShells from "./SetShells";
+import SetNotify from "./SetNotify";
+import SetLook from "./SetLook";
+import SetPerf from "./SetPerf";
 
 type Props = {
   onClose: () => void;
@@ -103,22 +106,13 @@ export default function SettingsPanel({ onClose, shells = [] }: Props) {
             <SetShells settings={settings} onChange={patch} shells={shells} />
           )}
           {activeTab === "notify" && (
-            <div>
-              <h2 style={{ margin: "0 0 20px", fontSize: 18, fontWeight: 700 }}>알림</h2>
-              <p style={{ color: "var(--dim)" }}>알림 화면은 이 단계에서 구성 중이에요.</p>
-            </div>
+            <SetNotify settings={settings} onChange={patch} />
           )}
           {activeTab === "look" && (
-            <div>
-              <h2 style={{ margin: "0 0 20px", fontSize: 18, fontWeight: 700 }}>화면</h2>
-              <p style={{ color: "var(--dim)" }}>화면 화면은 이 단계에서 구성 중이에요.</p>
-            </div>
+            <SetLook settings={settings} onChange={patch} />
           )}
           {activeTab === "perf" && (
-            <div>
-              <h2 style={{ margin: "0 0 20px", fontSize: 18, fontWeight: 700 }}>성능</h2>
-              <p style={{ color: "var(--dim)" }}>성능 화면은 이 단계에서 구성 중이에요.</p>
-            </div>
+            <SetPerf settings={settings} onChange={patch} />
           )}
           {activeTab === "keys" && (
             <div>
