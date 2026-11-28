@@ -4,6 +4,8 @@ import SetShells from "./SetShells";
 import SetNotify from "./SetNotify";
 import SetLook from "./SetLook";
 import SetPerf from "./SetPerf";
+import SetKeys from "./SetKeys";
+import SetAbout from "./SetAbout";
 
 type Props = {
   onClose: () => void;
@@ -114,18 +116,8 @@ export default function SettingsPanel({ onClose, shells = [] }: Props) {
           {activeTab === "perf" && (
             <SetPerf settings={settings} onChange={patch} />
           )}
-          {activeTab === "keys" && (
-            <div>
-              <h2 style={{ margin: "0 0 20px", fontSize: 18, fontWeight: 700 }}>단축키</h2>
-              <p style={{ color: "var(--dim)" }}>단축키 화면은 이 단계에서 구성 중이에요.</p>
-            </div>
-          )}
-          {activeTab === "about" && (
-            <div>
-              <h2 style={{ margin: "0 0 20px", fontSize: 18, fontWeight: 700 }}>정보 · 업데이트</h2>
-              <p style={{ color: "var(--dim)" }}>정보 화면은 이 단계에서 구성 중이에요.</p>
-            </div>
-          )}
+          {activeTab === "keys" && <SetKeys />}
+          {activeTab === "about" && <SetAbout />}
         </div>
       </div>
     </div>

@@ -11,6 +11,7 @@ import {
 } from "./api";
 import AccountsPanel from "./AccountsPanel";
 import ChangesPanel from "./ChangesPanel";
+import SettingsPanel from "./SettingsPanel";
 import { Dialog } from "./Dialog";
 import { Logo } from "./icons";
 import { layoutShortcut } from "./keys";
@@ -47,7 +48,8 @@ type Modal =
   | { type: "remove-project"; project: Project }
   | { type: "layouts" }
   | { type: "accounts" }
-  | { type: "changes"; project: Project };
+  | { type: "changes"; project: Project }
+  | { type: "settings" };
 
 /** 패널을 나눠도 두 쪽이 쓸 만한 크기인지. 아니면 안내를 띄운다. */
 function fits(index: number, dir: "row" | "col"): boolean {
@@ -241,6 +243,12 @@ export default function App() {
   // 터미널보다 먼저 받아, 앱 단축키는 셸에 보내지 않는다.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      if (e.ctrlKey && !e.shiftKey && !e.altKey && e.key === "," && !document.querySelector("dialog[open]")) {
+        e.preventDefault();
+        e.stopPropagation();
+        setModal({ type: "settings" });
+        return;
+      }
       if (e.ctrlKey && e.shiftKey && e.key === "G" && state && !document.querySelector("dialog[open]")) {
         e.preventDefault();
         e.stopPropagation();
@@ -545,6 +553,9 @@ export default function App() {
           sessions={state.sessions.filter((s) => s.projectId === modal.project.id)}
           onClose={close}
         />
+      )}
+      {modal?.type === "settings" && (
+        <SettingsPanel onClose={close} shells={shells} />
       )}
       {modal?.type === "remove-project" && (
         <Dialog
