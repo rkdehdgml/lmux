@@ -1,6 +1,16 @@
 import { listen } from "@tauri-apps/api/event";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { api, type Project, type SessionRecord, type Shell, type StoredState } from "./api";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
+import {
+  api,
+  type AccountSummary,
+  type Project,
+  type SessionRecord,
+  type SessionStatePayload,
+  type Shell,
+  type StoredState,
+} from "./api";
+import AccountsPanel from "./AccountsPanel";
+import ChangesPanel from "./ChangesPanel";
 import { Dialog } from "./Dialog";
 import { Logo } from "./icons";
 import { layoutShortcut } from "./keys";
@@ -19,7 +29,7 @@ import {
   transpose,
   type View,
 } from "./layout";
-import { type RunState, recordExit, sessionStatus } from "./model";
+import { type RunState, recordExit, sessionStatus, type SessionHookState } from "./model";
 import { NewProject } from "./NewProject";
 import { NewSession } from "./NewSession";
 import { PaneGrid } from "./PaneGrid";
@@ -35,7 +45,9 @@ type Modal =
   | { type: "session"; projectId?: string }
   | { type: "delete-session"; session: SessionRecord }
   | { type: "remove-project"; project: Project }
-  | { type: "layouts" };
+  | { type: "layouts" }
+  | { type: "accounts" }
+  | { type: "changes"; project: Project };
 
 /** 패널을 나눠도 두 쪽이 쓸 만한 크기인지. 아니면 안내를 띄운다. */
 function fits(index: number, dir: "row" | "col"): boolean {
@@ -55,6 +67,7 @@ export default function App() {
     complete: false,
   });
   const [runs, setRuns] = useState<Record<string, RunState>>({});
+  const [hooks, setHooks] = useState<Record<string, SessionHookState>>({});
   const [view, setView] = useState<View>(EMPTY);
   const [maximized, setMaximized] = useState(false);
   const [focusTick, setFocusTick] = useState(0);
@@ -65,6 +78,9 @@ export default function App() {
   const [busy, setBusy] = useState<Record<string, boolean>>({});
   const starting = useRef(new Set<string>());
   const minimized = useMinimized();
+  const [usages, setUsages] = useState<AccountSummary[]>([]);
+  const [tickSecs, setTickSecs] = useState(30);
+  const [conflicts, setConflicts] = useState<Map<string, string[]>>(new Map());
 
   const patch = useCallback((id: string, change: (run: RunState) => RunState) => {
     setRuns((all) => ({ ...all, [id]: change(all[id] ?? {}) }));
@@ -82,6 +98,11 @@ export default function App() {
       try {
         const { run, os_build } = await api.start(id);
         patch(id, (r) => ({ exit: r.exit, started: { run, osBuild: os_build } }));
+        // 새 실행이 시작될 때 이전 훅 상태를 지운다.
+        setHooks((all) => {
+          const { [id]: _, ...rest } = all;
+          return rest;
+        });
       } catch (error) {
         patch(id, () => ({ error: String(error) }));
       } finally {
@@ -110,6 +131,16 @@ export default function App() {
   };
 
   useEffect(() => {
+    const unlistenHook = listen<SessionStatePayload>("session-state", ({ payload }) => {
+      setHooks((all) => ({
+        ...all,
+        [payload.id]: {
+          run: payload.run,
+          live: payload.live ?? undefined,
+          context: payload.context ?? undefined,
+        },
+      }));
+    });
     const unlisten = listen<Exit>("session-exit", ({ payload }) =>
       onExited(payload.id, payload.run, payload.code),
     );
@@ -131,8 +162,35 @@ export default function App() {
       failed,
     );
     api.shells(true).then((shells) => setShells({ shells, complete: true }), failed);
-    return () => void unlisten.then((off) => off());
+    return () => {
+      void unlistenHook.then((off) => off());
+      void unlisten.then((off) => off());
+    };
   }, [onExited]);
+
+  useEffect(() => {
+    api.accountList().then(setUsages).catch(() => {});
+    const unlisten = listen<void>("usage-tick", () => {
+      setTickSecs(30);
+      api.accountList().then(setUsages).catch(() => {});
+    });
+    const countdown = setInterval(() => setTickSecs((s) => Math.max(0, s - 1)), 1000);
+    return () => {
+      void unlisten.then((f) => f());
+      clearInterval(countdown);
+    };
+  }, []);
+
+  useEffect(() => {
+    const unlisten = listen<{ sessionId: string; files: string[] }>("conflict-detected", ({ payload }) => {
+      setConflicts((prev) => {
+        const next = new Map(prev);
+        next.set(payload.sessionId, payload.files);
+        return next;
+      });
+    });
+    return () => { void unlisten.then((f) => f()); };
+  }, []);
 
   useEffect(() => {
     if (view.tree === savedTree.current) return;
@@ -165,6 +223,15 @@ export default function App() {
   // 터미널보다 먼저 받아, 앱 단축키는 셸에 보내지 않는다.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.shiftKey && e.key === "G" && state && !document.querySelector("dialog[open]")) {
+        e.preventDefault();
+        e.stopPropagation();
+        const sessionId = leaves(view.tree)[view.focus];
+        const session = state.sessions.find((s) => s.id === sessionId);
+        const project = state.projects.find((p) => p.id === session?.projectId);
+        if (project) setModal({ type: "changes", project });
+        return;
+      }
       const shortcut = layoutShortcut(e);
       // 저장한 배치를 읽기 전에는 바꾸지 않는다.
       if (!shortcut || !state || document.querySelector("dialog[open]")) return;
@@ -241,6 +308,7 @@ export default function App() {
   const forget = (ids: string[], next: StoredState) => {
     setState(next);
     setRuns((all) => Object.fromEntries(Object.entries(all).filter(([id]) => !ids.includes(id))));
+    setHooks((all) => Object.fromEntries(Object.entries(all).filter(([id]) => !ids.includes(id))));
     const left = next.sessions.map((s) => s.id);
     setView((v) => ({ ...v, tree: prune(v.tree, left) }));
   };
@@ -263,12 +331,14 @@ export default function App() {
         </div>
       );
     }
+    const conflictFiles = conflicts.get(session.id) ?? [];
     return (
       <SessionPanel
         project={project}
         session={session}
         shell={shellName(shells, session.shell)}
         run={runs[session.id]}
+        hook={hooks[session.id]}
         hidden={minimized}
         busy={busy[session.id] ?? false}
         focused={focused}
@@ -277,6 +347,16 @@ export default function App() {
         onExited={onExited}
         onRestart={() => restart(session.id).catch((error) => setNotice(String(error)))}
         onDelete={() => setModal({ type: "delete-session", session })}
+        onApprove={(choice) => {
+          const h = hooks[session.id];
+          const run = runs[session.id]?.started?.run;
+          if (!h || !run || h.live?.type !== "waiting") return;
+          api
+            .approve(session.id, run, h.live.request, choice)
+            .catch((error) => setNotice(String(error)));
+        }}
+        conflictFiles={conflictFiles}
+        onOpenChanges={() => setModal({ type: "changes", project })}
       />
     );
   };
@@ -288,6 +368,38 @@ export default function App() {
           <Logo />
           Lmux
         </div>
+        {usages.length > 0 && (
+          <div
+            className="usage-cluster"
+            role="button"
+            tabIndex={0}
+            onClick={() => setModal({ type: "accounts" })}
+            onKeyDown={(e) => e.key === "Enter" && setModal({ type: "accounts" })}
+            aria-label="계정 사용량 패널 열기"
+          >
+            {usages.map((acc, i) => {
+              const total =
+                acc.usage.fiveHour.input +
+                acc.usage.fiveHour.cacheCreation +
+                acc.usage.fiveHour.cacheRead;
+              const pct =
+                acc.limits.fiveHour > 0
+                  ? Math.min(100, Math.round((total / acc.limits.fiveHour) * 100))
+                  : 0;
+              return (
+                <Fragment key={acc.name}>
+                  {i > 0 && <span className="usage-sep" />}
+                  <span className="usage-label">{acc.name}</span>
+                  <span className="usage-mini">
+                    <span style={{ width: `${pct}%` }} />
+                  </span>
+                  <span className="usage-pct mono">{pct}%</span>
+                </Fragment>
+              );
+            })}
+            <span className="usage-tick mono">· {tickSecs}초</span>
+          </div>
+        )}
       </header>
       {notice && (
         <div className="banner" role="alert">
@@ -301,6 +413,7 @@ export default function App() {
         <Sidebar
           state={state}
           runs={runs}
+          hooks={hooks}
           shells={shells}
           selected={selected}
           visible={visible}
@@ -395,6 +508,24 @@ export default function App() {
             forget([modal.session.id], await api.deleteSession(modal.session.id));
             close();
           }}
+        />
+      )}
+      {modal?.type === "accounts" && (
+        <AccountsPanel
+          usages={usages}
+          tickSecs={tickSecs}
+          onClose={close}
+          onRefresh={() => {
+            setTickSecs(30);
+            api.accountList().then(setUsages).catch(() => {});
+          }}
+        />
+      )}
+      {modal?.type === "changes" && (
+        <ChangesPanel
+          project={modal.project}
+          sessions={state.sessions.filter((s) => s.projectId === modal.project.id)}
+          onClose={close}
         />
       )}
       {modal?.type === "remove-project" && (
