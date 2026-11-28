@@ -79,6 +79,7 @@ export default function App() {
   const [notice, setNotice] = useState<string>();
   const [busy, setBusy] = useState<Record<string, boolean>>({});
   const starting = useRef(new Set<string>());
+  const restoredRef = useRef(false);
   const minimized = useMinimized();
   const [usages, setUsages] = useState<AccountSummary[]>([]);
   const [tickSecs, setTickSecs] = useState(30);
@@ -194,22 +195,24 @@ export default function App() {
     return () => { void unlisten.then((f) => f()); };
   }, []);
 
-  // 앱 재시작 시 마지막으로 실행 중이던 세션 복원
+  // 앱 재시작 시 마지막으로 실행 중이던 세션 복원 (pull 방식으로 경쟁 조건 방지)
   useEffect(() => {
-    const unlisten = listen<{ sessionIds: string[] }>("restore-sessions", ({ payload }) => {
-      for (const id of payload.sessionIds) {
-        void start(id);
-      }
-    });
-    return () => { void unlisten.then((f) => f()); };
-  }, [start]);
+    if (!state || restoredRef.current) return;
+    restoredRef.current = true;
+    api.getLastRunning().then((ids) => {
+      for (const id of ids) void start(id);
+    }).catch(() => {});
+  }, [state, start]);
 
-  // 실행 중인 세션 목록을 백엔드에 동기화해 다음 시작 시 복원에 쓴다
+  // 실행 중인 세션 목록을 백엔드에 동기화해 다음 시작 시 복원에 쓴다 (2 초 디바운스로 과도한 disk 쓰기 방지)
   useEffect(() => {
     const running = Object.entries(runs)
       .filter(([, r]) => r.started && !r.exit)
       .map(([id]) => id);
-    void api.updateLastRunning(running).catch(() => {});
+    const timer = setTimeout(() => {
+      void api.updateLastRunning(running).catch(() => {});
+    }, 2000);
+    return () => clearTimeout(timer);
   }, [runs]);
 
   useEffect(() => {

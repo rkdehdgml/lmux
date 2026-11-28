@@ -1,10 +1,6 @@
-import { type AppSettings } from "./api";
-
 type Shell = { id: string; name: string };
 
 type Props = {
-  settings: AppSettings;
-  onChange: (patch: Partial<AppSettings>) => void;
   shells: Shell[];
 };
 

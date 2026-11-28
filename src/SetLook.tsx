@@ -84,16 +84,16 @@ export default function SetLook({ settings, onChange }: Props) {
         <div className="settings-card">
           <div className="settings-item">
             <span style={{ flex: 1 }}>강조색</span>
-            <div role="radiogroup" aria-label="강조색" style={{ display: "flex", gap: 8 }}>
+            <div aria-label="강조색 (다음 버전)" style={{ display: "flex", gap: 8 }}>
               {ACCENT_COLORS.map((c) => (
                 <button
                   key={c.value}
-                  role="radio"
-                  aria-checked={false}
+                  disabled
                   aria-label={c.label}
+                  title="다음 버전에서 추가돼요"
                   style={{
-                    width: 30, height: 30, borderRadius: "50%", border: 0, cursor: "pointer",
-                    background: c.hex,
+                    width: 30, height: 30, borderRadius: "50%", border: 0, cursor: "not-allowed",
+                    background: c.hex, opacity: 0.5,
                   }}
                 />
               ))}

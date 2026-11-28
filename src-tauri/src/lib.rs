@@ -653,22 +653,23 @@ fn save_settings(workspace: Shared<'_>, settings: store::Settings) -> Result<(),
 }
 
 #[tauri::command]
-fn prevent_sleep(enable: bool) {
-    use windows_sys::Win32::System::Power::{
-        SetThreadExecutionState, ES_CONTINUOUS, ES_DISPLAY_REQUIRED, ES_SYSTEM_REQUIRED,
-    };
-    unsafe {
-        if enable {
-            SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_DISPLAY_REQUIRED);
-        } else {
-            SetThreadExecutionState(ES_CONTINUOUS);
-        }
-    }
+fn prevent_sleep(tx: State<'_, std::sync::mpsc::SyncSender<bool>>, enable: bool) {
+    let _ = tx.try_send(enable);
 }
 
 #[tauri::command(async)]
 fn update_last_running(workspace: Shared<'_>, ids: Vec<String>) -> Result<(), String> {
     lock(&workspace)?.store.update_last_running(ids)
+}
+
+#[tauri::command(async)]
+fn get_last_running(workspace: Shared<'_>) -> Result<Vec<String>, String> {
+    let ws = lock(&workspace)?;
+    if ws.store.state().settings.restore_sessions {
+        Ok(ws.store.state().last_running.clone())
+    } else {
+        Ok(Vec::new())
+    }
 }
 
 pub fn run() {
@@ -686,21 +687,33 @@ pub fn run() {
                 Some(dir) => dir.into(),
                 None => app.path().app_data_dir()?,
             };
-            let (settings, last_running) = {
-                let ws = Workspace::open(&dir);
-                let s = ws.store.state().settings.clone();
-                let lr = ws.store.state().last_running.clone();
-                app.manage(Mutex::new(ws));
-                (s, lr)
-            };
+            app.manage(Mutex::new(Workspace::open(&dir)));
 
-            // 세션 복원: restore_sessions가 켜져 있고 마지막 실행 세션이 있으면 이벤트 발송
-            if settings.restore_sessions && !last_running.is_empty() {
-                let _ = app.emit(
-                    "restore-sessions",
-                    serde_json::json!({ "sessionIds": last_running }),
-                );
-            }
+            // 절전 방지 전용 스레드: SetThreadExecutionState는 호출한 스레드에만 적용돼서
+            // 임시 IPC 스레드에서 호출하면 스레드 종료 시 무효화된다.
+            let (sleep_tx, sleep_rx) = std::sync::mpsc::sync_channel::<bool>(2);
+            std::thread::spawn(move || {
+                use windows_sys::Win32::System::Power::{
+                    SetThreadExecutionState, ES_CONTINUOUS, ES_DISPLAY_REQUIRED, ES_SYSTEM_REQUIRED,
+                };
+                let mut active = false;
+                for enable in sleep_rx {
+                    if enable == active {
+                        continue;
+                    }
+                    active = enable;
+                    unsafe {
+                        if enable {
+                            SetThreadExecutionState(
+                                ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_DISPLAY_REQUIRED,
+                            );
+                        } else {
+                            SetThreadExecutionState(ES_CONTINUOUS);
+                        }
+                    }
+                }
+            });
+            app.manage(sleep_tx);
 
             // 훅 수신 서버 시작 및 이벤트 처리.
             // Arc 클론을 클로저에 이동해 HookServer 스레드가 앱 종료 순서와 무관하게
@@ -797,6 +810,7 @@ pub fn run() {
             save_settings,
             prevent_sleep,
             update_last_running,
+            get_last_running,
         ])
         .on_window_event(|win, ev| {
             if let tauri::WindowEvent::CloseRequested { api, .. } = ev {
@@ -888,9 +902,9 @@ fn process_hook_event(
     let now_working = matches!(entry.live, Some(Live::Working));
     drop(guard);
     if now_working {
-        prevent_sleep(true);
+        let _ = app.state::<std::sync::mpsc::SyncSender<bool>>().try_send(true);
     } else if !any_session_working(states) {
-        prevent_sleep(false);
+        let _ = app.state::<std::sync::mpsc::SyncSender<bool>>().try_send(false);
     }
 
     // 컨텍스트는 Stop 이벤트에서 transcript를 읽어 갱신 (추후 구현; 현재는 유지)

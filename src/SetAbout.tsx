@@ -18,31 +18,31 @@ export default function SetAbout() {
           </div>
           <div style={{ fontSize: 12.5, color: "#4CC79A", marginTop: 6 }}>✓ 최신 버전이에요 · 방금 확인</div>
         </div>
-        <button className="btn">업데이트 확인</button>
+        <button disabled className="btn" title="다음 버전에서 추가돼요">업데이트 확인</button>
       </div>
 
       {/* 업데이트 */}
       <section>
         <h3 style={{ margin: "0 0 8px", fontSize: 14, fontWeight: 600, color: "#C7CCD6" }}>업데이트</h3>
         <div className="settings-card">
-          <div className="settings-item">
+          <div className="settings-item" style={{ opacity: 0.5 }}>
             <span style={{ flex: 1 }}>자동으로 내려받고 다음 실행 때 설치</span>
-            <button className="settings-sw on" role="switch" aria-checked={true} aria-label="자동 업데이트"><span /></button>
+            <button disabled className="settings-sw on" role="switch" aria-checked={true} aria-label="자동 업데이트" title="다음 버전에서 추가돼요"><span /></button>
           </div>
-          <div className="settings-item">
+          <div className="settings-item" style={{ opacity: 0.5 }}>
             <span style={{ flex: 1 }}>
               업데이트 채널
               <br />
               <span style={{ fontSize: 12, color: "#8A93A5" }}>베타는 새 기능을 먼저 받지만 불안정할 수 있어요</span>
             </span>
-            <div role="radiogroup" aria-label="채널" style={{ display: "flex", gap: 2, background: "#0E1014", borderRadius: 8, padding: 3 }}>
-              <button className="btn" role="radio" aria-checked={true} style={{ padding: "5px 12px", background: "#262C38" }}>안정</button>
-              <button className="btn" role="radio" aria-checked={false} style={{ padding: "5px 12px", background: "transparent", color: "#A0A8B8" }}>베타</button>
+            <div aria-label="채널 (다음 버전)" style={{ display: "flex", gap: 2, background: "#0E1014", borderRadius: 8, padding: 3 }}>
+              <button disabled className="btn" style={{ padding: "5px 12px", background: "#262C38" }}>안정</button>
+              <button disabled className="btn" style={{ padding: "5px 12px", background: "transparent", color: "#A0A8B8" }}>베타</button>
             </div>
           </div>
-          <div className="settings-item">
+          <div className="settings-item" style={{ opacity: 0.5 }}>
             <span style={{ flex: 1 }}>에이전트가 일하는 중에는 설치 미루기</span>
-            <button className="settings-sw on" role="switch" aria-checked={true} aria-label="작업 중 설치 미루기"><span /></button>
+            <button disabled className="settings-sw on" role="switch" aria-checked={true} aria-label="작업 중 설치 미루기" title="다음 버전에서 추가돼요"><span /></button>
           </div>
           <div className="settings-item">
             <span style={{ flex: 1 }}>변경 기록</span>

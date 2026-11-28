@@ -176,4 +176,5 @@ export const api = {
   saveSettings: (settings: AppSettings) => invoke<void>("save_settings", { settings }),
   preventSleep: (enable: boolean) => invoke<void>("prevent_sleep", { enable }),
   updateLastRunning: (ids: string[]) => invoke<void>("update_last_running", { ids }),
+  getLastRunning: () => invoke<string[]>("get_last_running"),
 };

@@ -105,7 +105,7 @@ export default function SettingsPanel({ onClose, shells = [] }: Props) {
           </button>
 
           {activeTab === "shells" && (
-            <SetShells settings={settings} onChange={patch} shells={shells} />
+            <SetShells shells={shells} />
           )}
           {activeTab === "notify" && (
             <SetNotify settings={settings} onChange={patch} />
