@@ -18,20 +18,6 @@ const ACCENT_COLORS = [
   { value: "orange", hex: "#C8563F", label: "주황" },
 ];
 
-function Sw({ on, label, onChange }: { on: boolean; label: string; onChange: () => void }) {
-  return (
-    <button
-      className={`settings-sw${on ? " on" : ""}`}
-      role="switch"
-      aria-checked={on}
-      aria-label={label}
-      onClick={onChange}
-    >
-      <span />
-    </button>
-  );
-}
-
 export default function SetLook({ settings, onChange }: Props) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>

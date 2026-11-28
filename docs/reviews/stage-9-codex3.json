@@ -1,0 +1,6 @@
+**중간 2건이 남아 있습니다. 높음 항목은 없습니다.**
+
+- **중간 · [README.md:31](/C:/dev/dhkang/lmux/README.md:31)** — README는 Rust 1.88 이상을 안내하지만, [Cargo.lock:3949](/C:/dev/dhkang/lmux/src-tauri/Cargo.lock:3949)에 고정된 Tauri 2.12.7의 `Cargo.toml`은 `rust-version = "1.90"`을 선언합니다. README의 최소 요구사항을 Rust 1.90 이상으로 올려야 합니다.
+- **중간 · [ci.yml:51](/C:/dev/dhkang/lmux/.github/workflows/ci.yml:51)** — `cargo build --release`는 Rust의 릴리스 프로필을 검사합니다. 현재 구성에서는 Tauri의 `custom-protocol` 기능이 활성화되지 않고 `devUrl` 경로가 사용되므로, [tauri.conf.json:8](/C:/dev/dhkang/lmux/src-tauri/tauri.conf.json:8)에 설정된 프런트엔드 빌드와 배포용 `dist` 임베딩은 CI 검증에서 빠집니다. [Tauri 자산 처리 소스](https://docs.rs/tauri-codegen/latest/src/tauri_codegen/context.rs.html#176-190)
+
+로컬에서 `tsc --noEmit`을 실행해 **종료 코드 0**을 확인했습니다. 중복 `padding`과 미사용 `Sw` 두 건은 모두 해결됐습니다. README의 Node.js 24.15 이상(24.x), React 19, Tauri 2, axum 0.7 표기도 의존성 설정과 일치합니다. CI는 워크플로와 의존성 소스를 정적으로 검토했습니다.

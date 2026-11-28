@@ -78,11 +78,11 @@ export default function SetKeys() {
               <div
                 key={row.label}
                 style={{
-                  display: "flex", alignItems: "center", gap: 12, padding: "11px 0",
+                  display: "flex", alignItems: "center", gap: 12,
+                  padding: row.conflict ? "11px 20px" : "11px 0",
                   borderTop: i > 0 ? "1px solid #1F242D" : undefined, fontSize: 13.5,
                   background: row.conflict ? "#221B0E" : undefined,
                   margin: row.conflict ? "0 -20px" : undefined,
-                  padding: row.conflict ? "11px 20px" : undefined,
                 } as React.CSSProperties}
               >
                 <span style={{ flex: 1 }}>

@@ -1,0 +1,5 @@
+**PASS** — 9단계 범위에서 남은 높음·중간 항목은 없습니다.
+
+README의 한국어·영어 섹션과 MIT 라이선스를 확인했습니다. CI는 `main` 또는 `master`에 푸시되고 프런트엔드·백엔드 테스트 잡이 성공하면 NSIS 설치 파일을 빌드해 아티팩트로 업로드하도록 구성되어 있습니다. [README.md](/C:/dev/dhkang/lmux/README.md:3) · [LICENSE](/C:/dev/dhkang/lmux/LICENSE:1) · [ci.yml](/C:/dev/dhkang/lmux/.github/workflows/ci.yml:57)
+
+로컬 `tsc --noEmit`은 통과했습니다. GitHub Actions에서 실제 설치 파일 생성과 업로드는 확인하지 못했습니다.

@@ -12,20 +12,6 @@ const ROWS: { label: string; pc: keyof AppSettings; phone?: null; sound?: null }
   { label: "두 세션이 같은 파일을 고쳤을 때", pc: "notifyConflict" },
 ];
 
-function Sw({ on, label, onChange }: { on: boolean; label: string; onChange: () => void }) {
-  return (
-    <button
-      className={`settings-sw${on ? " on" : ""}`}
-      role="switch"
-      aria-checked={on}
-      aria-label={label}
-      onClick={onChange}
-    >
-      <span />
-    </button>
-  );
-}
-
 export default function SetNotify({ settings, onChange }: Props) {
   return (
     <div>
